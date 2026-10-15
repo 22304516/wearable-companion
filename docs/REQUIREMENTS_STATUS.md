@@ -10,7 +10,7 @@
 | Historical storage | Implemented for synthetic demo readings | Timestamped samples are stored locally; maximum 200 entries. History has rolling 24-hour, 7-day, and all-sample filters with per-metric averages, low/high/latest values, and sample counts. Verify filter boundaries and calculations on target platforms. |
 | Historical trends | Basic filtered trend view implemented for synthetic samples | History shows up to 20 samples from the selected range as range-scaled bars with low/high labels. This is a demo visualisation, not clinical analysis. |
 | Data export | CSV export implemented for selected synthetic history range | Web downloads a CSV; native platforms share a temporary CSV file. Verify range selection and export on each target platform. |
-| Authentication | Not implemented | Confirm expected deployment and security scope before selecting an approach. |
+| Authentication | Supabase email/password integration implemented; external project not configured | Configured mode gates access, supports sign-up/sign-in/session restore/sign-out, and scopes local app keys by account ID. Follow [AUTH_SETUP.md](./AUTH_SETUP.md) to connect a project. No cloud data storage or RLS is implemented or verified. |
 | NFC | Not implemented | Requires compatible hardware and platform validation. |
 | Alerts/notifications | Not implemented | Prioritize after core workflow. |
 | User/maintenance/project documentation | Initial guides drafted | User guide, maintenance guide, and validation checklist describe the current prototype; add screenshots and actual validation evidence during review. |

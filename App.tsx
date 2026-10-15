@@ -14,11 +14,14 @@ import { makeCsvFileName, toSyntheticCsv } from './src/csv';
 import { exportCsv } from './src/exportCsv';
 import { filterHistoryByRange, HistoryRange, summarizeMetric } from './src/history';
 import { TemperatureUnit, toDisplayReading } from './src/units';
+import { AuthScreen } from './src/AuthScreen';
+import { isSupabaseConfigured, supabase } from './src/authClient';
+import type { Session } from '@supabase/supabase-js';
 
-const HISTORY_KEY = 'wearable-companion.synthetic-history.v1';
-const PREFERENCES_KEY = 'wearable-companion.visible-metrics.v1';
-const SELECTED_DEVICE_KEY = 'wearable-companion.selected-simulator.v1';
-const TEMPERATURE_UNIT_KEY = 'wearable-companion.temperature-unit.v1';
+const HISTORY_KEY = 'synthetic-history.v1';
+const PREFERENCES_KEY = 'visible-metrics.v1';
+const SELECTED_DEVICE_KEY = 'selected-simulator.v1';
+const TEMPERATURE_UNIT_KEY = 'temperature-unit.v1';
 const DEFAULT_DEVICE = SIMULATED_DEVICES[0];
 const MAX_HISTORY_ITEMS = 200;
 const REFRESH_INTERVAL_MS = 3000;
@@ -266,7 +269,24 @@ function SummaryCard({
   );
 }
 
-export default function App() {
+function WearableApp({
+  userId,
+  demoMode,
+  accountEmail,
+  onSignOut,
+}: {
+  userId: string;
+  demoMode: boolean;
+  accountEmail?: string;
+  onSignOut?: () => void;
+}) {
+  const storageKey = (key: string) => userId === 'demo'
+    ? `wearable-companion.${key}`
+    : `wearable-companion.user.${userId}.${key}`;
+  const historyKey = storageKey(HISTORY_KEY);
+  const preferencesKey = storageKey(PREFERENCES_KEY);
+  const selectedDeviceKey = storageKey(SELECTED_DEVICE_KEY);
+  const temperatureUnitKey = storageKey(TEMPERATURE_UNIT_KEY);
   const [readings, setReadings] = useState(makeSyntheticReadings(Date.now(), DEFAULT_DEVICE.id));
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>(DEFAULT_DEVICE.id);
@@ -293,7 +313,7 @@ export default function App() {
 
     async function restorePreferences() {
       try {
-        const saved = await AsyncStorage.getItem(PREFERENCES_KEY);
+        const saved = await AsyncStorage.getItem(preferencesKey);
         if (saved) {
           const parsed: unknown = JSON.parse(saved);
           const restored = sanitizeVisibleMetrics(parsed, AVAILABLE_METRICS);
@@ -302,13 +322,13 @@ export default function App() {
             if (active) setVisibleMetrics(restored);
           }
         }
-        const savedDeviceId = await AsyncStorage.getItem(SELECTED_DEVICE_KEY);
+        const savedDeviceId = await AsyncStorage.getItem(selectedDeviceKey);
         const restoredDevice = SIMULATED_DEVICES.find(device => device.id === savedDeviceId);
         if (active && restoredDevice) {
           setSelectedDeviceId(restoredDevice.id);
           setReadings(makeSyntheticReadings(Date.now(), restoredDevice.id));
         }
-        const savedTemperatureUnit = await AsyncStorage.getItem(TEMPERATURE_UNIT_KEY);
+        const savedTemperatureUnit = await AsyncStorage.getItem(temperatureUnitKey);
         if (active && (savedTemperatureUnit === 'C' || savedTemperatureUnit === 'F')) {
           setTemperatureUnit(savedTemperatureUnit);
         }
@@ -323,14 +343,14 @@ export default function App() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [preferencesKey, selectedDeviceKey, temperatureUnitKey]);
 
   useEffect(() => {
     let active = true;
 
     async function restoreHistory() {
       try {
-        const saved = await AsyncStorage.getItem(HISTORY_KEY);
+        const saved = await AsyncStorage.getItem(historyKey);
         let restored: HistoryEntry[] = [];
         if (saved) {
           const parsed: unknown = JSON.parse(saved);
@@ -348,7 +368,7 @@ export default function App() {
           historyRef.current = [firstEntry];
           setReadings(firstReadings);
           setHistory(historyRef.current);
-          await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(historyRef.current));
+          await AsyncStorage.setItem(historyKey, JSON.stringify(historyRef.current));
         }
       } catch {
         if (!active) return;
@@ -361,7 +381,7 @@ export default function App() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [historyKey]);
 
   useEffect(() => {
     if (!historyLoaded || !preferencesLoaded || !simulatorRunning) return;
@@ -374,19 +394,19 @@ export default function App() {
       setReadings(nextReadings);
       setHistory(nextHistory);
 
-      void AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(nextHistory)).catch(() => {
+      void AsyncStorage.setItem(historyKey, JSON.stringify(nextHistory)).catch(() => {
         setStorageError(true);
       });
     }, REFRESH_INTERVAL_MS);
 
     return () => clearInterval(timer);
-  }, [historyLoaded, preferencesLoaded, simulatorRunning, selectedDevice]);
+  }, [historyKey, historyLoaded, preferencesLoaded, simulatorRunning, selectedDevice]);
 
   async function clearHistory() {
     historyRef.current = [];
     setHistory([]);
     try {
-      await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify([]));
+      await AsyncStorage.setItem(historyKey, JSON.stringify([]));
       setStorageError(false);
     } catch {
       setStorageError(true);
@@ -398,7 +418,7 @@ export default function App() {
     setVisibleMetrics(next);
     preferenceWriteRef.current = preferenceWriteRef.current
       .catch(() => undefined)
-      .then(() => AsyncStorage.setItem(PREFERENCES_KEY, JSON.stringify(next)))
+      .then(() => AsyncStorage.setItem(preferencesKey, JSON.stringify(next)))
       .then(() => setPreferencesError(false))
       .catch(() => setPreferencesError(true));
   }
@@ -418,7 +438,7 @@ export default function App() {
     setSelectedDeviceId(device.id);
     setReadings(makeSyntheticReadings(Date.now(), device.id));
     try {
-      await AsyncStorage.setItem(SELECTED_DEVICE_KEY, device.id);
+      await AsyncStorage.setItem(selectedDeviceKey, device.id);
       setPreferencesError(false);
     } catch {
       setPreferencesError(true);
@@ -428,7 +448,7 @@ export default function App() {
   async function selectTemperatureUnit(unit: TemperatureUnit) {
     setTemperatureUnit(unit);
     try {
-      await AsyncStorage.setItem(TEMPERATURE_UNIT_KEY, unit);
+      await AsyncStorage.setItem(temperatureUnitKey, unit);
       setPreferencesError(false);
     } catch {
       setPreferencesError(true);
@@ -460,6 +480,13 @@ export default function App() {
         <Text style={styles.eyebrow}>2026-CSE3CAP · PROTOTYPE</Text>
         <Text style={styles.title}>Wearable Companion</Text>
         <Text style={styles.subtitle}>A simple place to review wearable data.</Text>
+
+        {demoMode && (
+          <View style={styles.demoNotice}>
+            <Text style={styles.demoNoticeTitle}>Demo mode · authentication not configured</Text>
+            <Text style={styles.demoNoticeText}>Only synthetic readings are available. Add Supabase settings to enable account sign-in.</Text>
+          </View>
+        )}
 
         <View style={styles.notice}>
           <Text style={styles.noticeTitle}>
@@ -637,6 +664,19 @@ export default function App() {
         ) : (
           <>
             <Text style={styles.section}>Display preferences</Text>
+            {!demoMode && (
+              <View style={styles.accountCard}>
+                <Text style={styles.deviceName}>Signed in</Text>
+                <Text style={styles.deviceStatus}>{accountEmail ?? 'Email unavailable'}</Text>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={onSignOut}
+                  style={styles.signOutButton}
+                >
+                  <Text style={styles.resetButtonText}>Sign out</Text>
+                </Pressable>
+              </View>
+            )}
             <Text style={styles.settingsIntro}>
               Choose which synthetic readings appear on the Today dashboard. All readings continue to be saved in History while the simulator is running.
             </Text>
@@ -683,6 +723,13 @@ export default function App() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#f4f6fa' },
+  authLoading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f4f6fa', padding: 24 },
+  authLoadingText: { color: '#495577', fontSize: 15 },
+  demoNotice: { backgroundColor: '#fff4d8', borderColor: '#efd18a', borderWidth: 1, borderRadius: 14, padding: 14, marginBottom: 14 },
+  demoNoticeTitle: { color: '#72540d', fontWeight: '700', marginBottom: 5 },
+  demoNoticeText: { color: '#72540d', lineHeight: 19 },
+  accountCard: { backgroundColor: 'white', borderRadius: 14, padding: 16, marginBottom: 14 },
+  signOutButton: { alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 10, backgroundColor: '#e6e9f2', marginTop: 12 },
   container: { padding: 22, paddingTop: 30, maxWidth: 720, width: '100%', alignSelf: 'center' },
   eyebrow: { color: '#5263a7', fontSize: 12, fontWeight: '700', letterSpacing: 1.1 },
   title: { color: '#17213b', fontSize: 30, fontWeight: '700', marginTop: 8 },
@@ -768,3 +815,60 @@ const styles = StyleSheet.create({
   emptyText: { color: '#69748c', backgroundColor: 'white', borderRadius: 14, padding: 18, lineHeight: 21 },
   footer: { color: '#818ba0', fontSize: 12, marginTop: 20, marginBottom: 10, textAlign: 'center' },
 });
+
+export default function App() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [authReady, setAuthReady] = useState(!isSupabaseConfigured);
+
+  useEffect(() => {
+    const client = supabase;
+    if (!client) return;
+    let active = true;
+    const { data: { subscription } } = client.auth.onAuthStateChange((_event, nextSession) => {
+      if (active) setSession(nextSession);
+    });
+    void client.auth.getSession().then(async ({ data, error }) => {
+      if (!active) return;
+      if (error || !data.session) {
+        setSession(null);
+        setAuthReady(true);
+        return;
+      }
+      const { data: verified, error: userError } = await client.auth.getUser();
+      if (!active) return;
+      setSession(userError || !verified.user ? null : data.session);
+      setAuthReady(true);
+    }).catch(() => {
+      if (active) {
+        setSession(null);
+        setAuthReady(true);
+      }
+    });
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  if (!isSupabaseConfigured) {
+    return <WearableApp userId="demo" demoMode />;
+  }
+  if (!authReady) {
+    return (
+      <SafeAreaView style={styles.authLoading}>
+        <Text style={styles.authLoadingText}>Checking your session…</Text>
+      </SafeAreaView>
+    );
+  }
+  if (!session) return <AuthScreen />;
+
+  return (
+    <WearableApp
+      key={session.user.id}
+      userId={session.user.id}
+      accountEmail={session.user.email}
+      demoMode={false}
+      onSignOut={() => { void supabase?.auth.signOut(); }}
+    />
+  );
+}

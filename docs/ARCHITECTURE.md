@@ -5,7 +5,7 @@
 
 ## Scope and context
 
-Wearable Companion is a single-developer capstone prototype. There is no reusable repository, wearable hardware, Jira instance, backend, or authentication provider. The current application demonstrates a mobile-first interface using synthetic readings. It is not a production health-data system.
+Wearable Companion is a single-developer capstone prototype. There is no wearable hardware, Jira instance, or configured authentication project. The app includes an optional Supabase Auth integration and demonstrates a mobile-first interface using synthetic readings. It is not a production health-data system.
 
 ## Component view
 
@@ -18,12 +18,14 @@ flowchart TD
   Units[src/units.ts<br/>Display conversion]
   Store[src/storage.ts<br/>Validate local records]
   Local[(AsyncStorage<br/>History · preferences)]
+  Auth[Supabase Auth<br/>Email · password · session]
   CSV[src/csv.ts<br/>CSV formatting]
   Web[src/exportCsv.web.ts<br/>Browser download]
   Native[src/exportCsv.ts<br/>FileSystem + system share sheet]
 
   User --> UI
   UI --> Sim
+  UI --> Auth
   Sim --> UI
   UI --> History
   History --> UI
@@ -36,7 +38,7 @@ flowchart TD
   CSV --> Native
 ```
 
-`App.tsx` owns the current screen state and coordinates the simulator, storage, history, unit conversion, and export modules. Samples are stored in Celsius; `src/units.ts` converts the display and export value when Fahrenheit is selected. The selected simulator profile refreshes readings every three seconds while running. Each new history record stores the selected profile ID, name, and type. The interface labels both profiles as synthetic. History, selected profile, temperature unit, and display preferences are stored on the current device/browser; there is no server synchronization.
+`App.tsx` coordinates authentication, the simulator, storage, history, unit conversion, and export modules. When Supabase environment values are configured, registration/sign-in is required before the app opens and the authenticated user's ID scopes local storage keys. Without configuration, the app runs in a labelled synthetic-only demo mode. Samples are stored in Celsius; `src/units.ts` converts the display and export value when Fahrenheit is selected. The selected simulator profile refreshes readings every three seconds while running. Each new history record stores the selected profile ID, name, and type. No reading or preference is synchronized to a server.
 
 ## Data flow
 
@@ -77,9 +79,16 @@ flowchart TD
 - **Reason:** Web and native platforms expose different file-delivery mechanisms.
 - **Consequences:** CSV output is intended for synthetic sample data. Export has static type checking and lint coverage but still needs manual verification in each target environment.
 
+### ADR-005 — Supabase email/password authentication
+
+- **Status:** Accepted for the prototype; external project configuration is pending.
+- **Decision:** Use Supabase Auth email/password registration and sign-in when a project URL and publishable key are provided through local Expo environment variables.
+- **Reason:** The project requirements call for real authentication, and Supabase provides a managed Auth service compatible with the existing Expo app.
+- **Consequences:** Configured mode requires a restored/authenticated session and provides registration, sign-in, and sign-out. Local records are namespaced by account ID. The publishable key is client-visible; database policies are required before exposing backend data. No Supabase project, remote database, RLS policy, SMTP, production configuration, or health data is connected. Session persistence uses AsyncStorage on native platforms and browser storage on web; this is not suitable for real health data without a reviewed secure-session design.
+
 ## Known architecture gaps
 
-- No authentication, backend API, database service, or user-data separation.
+- Authentication is implemented but no Supabase project is configured. There is no backend API/table for app readings or preferences, no RLS policy, and no cloud synchronization.
 - No BLE/NFC adapter, device discovery, physical-device selection, or simultaneous multiple-device connection. The two simulator profiles are not hardware support.
 - The simulator is separated from the screen code as a module, but there is not yet a general device-source interface.
 - AsyncStorage is not suitable for confidential health records.
@@ -87,4 +96,4 @@ flowchart TD
 
 ## Future architecture gate
 
-Before adding real user or health data, select an authentication and backend design, enforce per-user authorization, define data retention/deletion, and review privacy/security requirements. Before adding BLE/NFC, confirm device protocols and mobile platform support with compatible hardware. Keep simulator and hardware sources explicitly distinguishable in the UI and stored records.
+Before adding real user or health data, configure the external auth project, move session persistence to a reviewed secure-storage design, create the remote schema, enforce and test per-user RLS, define retention/deletion, and review privacy/security requirements. Before adding BLE/NFC, confirm device protocols and mobile platform support with compatible hardware. Keep simulator and hardware sources explicitly distinguishable in the UI and stored records.

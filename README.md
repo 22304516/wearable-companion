@@ -11,12 +11,17 @@ npm install
 npx expo start
 ```
 
-Scan the QR code with Expo Go, or use the terminal shortcuts for a simulator. No credentials or backend are required for this initial demo.
+Scan the QR code with Expo Go, or use the terminal shortcuts for a simulator. Without auth credentials, the app runs in synthetic-only demo mode.
+
+## Authentication
+
+The app includes Supabase email/password registration and sign-in. To enable it, configure the project URL and publishable key as described in [docs/AUTH_SETUP.md](./docs/AUTH_SETUP.md). Without both variables, the app runs in visibly labelled synthetic-only demo mode. No backend stores app readings yet; do not enter real health data.
 
 ## Current status
 
 - Implemented: a dashboard, two selectable synthetic device profiles, simulator controls, display preferences, and history view for synthetic readings. Samples refresh every three seconds while the simulator is running; generation can be paused or resumed. Users can choose which metrics appear on Today and choose Celsius or Fahrenheit for temperature. Up to 200 timestamped entries with source identity are stored locally. History includes 24-hour, 7-day, and all-sample filters, per-range metric summaries and trend bars, CSV export, and clear controls.
-- Not implemented: accounts/authentication, real BLE/NFC, alerts, backend, production security, and a full accessibility audit.
+- Implemented partially: Supabase email/password account flow, gated app access when configured, and account-namespaced local records. No provider project is configured yet.
+- Not implemented: real BLE/NFC, alerts, cloud data storage, production security, and a full accessibility audit.
 - No physical wearable is available. Device status and readings must remain clearly identified as simulated.
 
 See `docs/USER_GUIDE.md` for app workflows, `docs/DEMO_CHECKLIST.md` for the proposed demonstration flow, `docs/SYSTEM_MAINTENANCE.md` for technical handover, `docs/ARCHITECTURE.md` for architecture and decisions, `docs/VALIDATION_CHECKLIST.md` for checks to perform and record, `docs/REQUIREMENTS_TRACEABILITY.md` for requirement coverage and gaps, `docs/WORK_BREAKDOWN_STRUCTURE.md` for remaining deliverables, and `docs/STAKEHOLDER_REGISTER.md` plus `docs/COMMUNICATION_PLAN.md` for proposed project engagement. The project plan, risk register, and requirements status are also in `docs/`. Keep results based on actual work and evidence; do not record planned checks as completed.
