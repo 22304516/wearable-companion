@@ -31,7 +31,7 @@
 | 5.3 | Requirements and test evidence | Traceability and completed validation records | Traceability exists; manual results remain unrecorded. |
 | 6.0 | Demonstration and submission handover | Reliable demo, final presentation, source archive, administrative checklist | Not complete. Prepare after platform verification and scope review. |
 | 6.1 | Demonstration materials | Timed sequence, setup, expected outcomes, synthetic data, fallback, limitations | Drafted in `DEMO_CHECKLIST.md`; assessment format and rehearsal still need confirmation. |
-| 6.2 | Scrum Master presentation | Project overview, actual progress, individual responsibilities, risks, reflection, next steps | Not prepared; use the supplied presentation template when available. |
+| 6.2 | Scrum Master presentation | Project overview, actual progress, individual responsibilities, risks, reflection, next steps | 10-slide draft prepared on 15 Oct 2026 at `outputs/2026-CSE3CAP_scrum_master_presentation_draft.pptx`. No supplied template was present. Team and sprint numbers are marked not recorded; confirm assessment details and personalize before presenting. Structural, font, and layout checks passed; rehearsal and native PowerPoint review remain pending. |
 | 6.3 | Final source archive | Reproducible source and docs; exclude secrets, caches, and regenerable build artifacts | Not prepared; review `package-lock.json` and archive contents before submission. |
 | 6.4 | University administration | Authorship and effort-form information checklist, based on actual declarations | Not prepared; do not invent signatures, contributions, percentages, or approvals. |
 
@@ -41,7 +41,7 @@ Treat an output as complete only when its artifact exists, it matches the curren
 
 ## Next priority
 
-1. Connect an owner-created Supabase development project and verify sign-up, email confirmation, sign-in, restored session, sign-out, and account data separation.
-2. Review secure session storage and RLS before considering any real account or health data; add and verify system notifications only on a supported mobile target if assessment scope requires them.
-3. Run the manual validation checklist on web and at least one available mobile target; record actual device/browser and app commit.
-4. Capture reviewed screenshots, then prepare the presentation, source archive, and administrative checklist from actual assessment instructions and declarations.
+1. Confirm official assessment instructions and replace the presentation placeholders only with verified team, sprint, and submission details. Rehearse the draft and record any changes.
+2. Configure an owner-created Supabase development project and verify sign-up, email confirmation, sign-in, restored session, sign-out, and account data separation.
+3. Review secure session storage and RLS before considering any real account or health data; add and verify system notifications only on a supported mobile target if assessment scope requires them.
+4. Run the manual validation checklist on web and at least one available mobile target; record actual device/browser and app commit. Then capture reviewed screenshots, prepare a source archive, and complete any administrative checklist using the official instructions and actual declarations.

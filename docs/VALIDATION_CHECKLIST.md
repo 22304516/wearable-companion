@@ -54,6 +54,8 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 
 **Authentication form check, 15 October 2026:** A temporary local web preview used only placeholder Supabase URL/key values. Invalid email and short password inputs displayed their validation messages. No valid credential or auth request was sent. The placeholder configuration was not saved in the repository; the preview was stopped.
 
+**Presentation draft, 15 October 2026:** Prepared a 10-slide Scrum Master presentation from the current repository and recorded evidence. The PPTX passed structural package integrity, 10-slide count, slide geometry, heading/bullet geometry, and Arial font-policy checks with no findings. The montage and slides were visually reviewed. No supplied template was available; team and sprint numbers remain marked not recorded. Rehearsal, assessor-format confirmation, and review in native PowerPoint remain pending. The draft is delivered in the task `outputs` folder and is not committed to this repository.
+
 ## Evidence to retain
 
 Record the actual device/browser, operating system version, app commit, steps, expected and observed outcomes, and any issue found. Capture screenshots only after reviewing them for personal information. Hardware-specific checks remain unverified until physical hardware and a real integration are available.
