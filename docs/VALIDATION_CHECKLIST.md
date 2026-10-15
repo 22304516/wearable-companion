@@ -59,7 +59,7 @@ This document combines planned checks with a results log. Record dates, platform
 
 **Presentation draft, 15 October 2026:** Prepared a 10-slide Scrum Master presentation from the current repository and recorded evidence. The PPTX passed structural package integrity, 10-slide count, slide geometry, heading/bullet geometry, and Arial font-policy checks with no findings. The montage and slide 7 were visually inspected; automated layout validation reported no findings. The slides have not been individually reviewed in native PowerPoint. No supplied template was available; team and sprint numbers remain marked not recorded. Rehearsal, assessor-format confirmation, and review in native PowerPoint remain pending. The draft is delivered in the task `outputs` folder and is not committed to this repository.
 
-**Source archive, 15 October 2026:** The latest ZIP snapshot is refreshed after the privacy and research review documentation commit. It is generated from the committed Git tree and includes all tracked source, docs, and lockfile; no private `.env`, `.git`, `node_modules`, or `.expo` entries are included. The final archive and SHA-256 sidecar are delivered in the task `outputs` folder. Recreate them after subsequent source changes.
+**Source archive, 15 October 2026:** The latest ZIP snapshot is generated from the committed Git tree with 50 tracked files, including `package-lock.json`. The listing was inspected; no private `.env`, `.git`, `node_modules`, or `.expo` entries were present. The final archive and SHA-256 sidecar are delivered in the task `outputs` folder. Recreate them after subsequent source changes.
 
 ## Evidence to retain
 
