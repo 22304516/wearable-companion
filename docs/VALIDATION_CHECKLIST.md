@@ -23,6 +23,7 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 | Hide one metric in Settings | Metric disappears from Today but remains in History. | Not recorded |
 | Reload the app | Saved metric preference and history are restored on the same installation. | Not recorded |
 | Clear History | Existing entries disappear; a later simulator sample may create a new entry. | Not recorded |
+| Restore malformed local data | Invalid entries are ignored without breaking the screen or trend charts. | Not recorded |
 | Review trend bars | Up to 20 samples appear per metric; low/high ranges are labelled. | Not recorded |
 | Review offline/hardware wording | App identifies readings and device as simulated and does not imply hardware access. | Not recorded |
 

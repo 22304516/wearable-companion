@@ -9,18 +9,13 @@ import {
   View,
 } from 'react-native';
 import { makeSyntheticReadings, Reading } from './src/simulator';
+import { HistoryEntry, sanitizeHistory, sanitizeVisibleMetrics } from './src/storage';
 
 const HISTORY_KEY = 'wearable-companion.synthetic-history.v1';
 const PREFERENCES_KEY = 'wearable-companion.visible-metrics.v1';
 const MAX_HISTORY_ITEMS = 200;
 const REFRESH_INTERVAL_MS = 3000;
 const AVAILABLE_METRICS = ['Heart rate', 'Steps today', 'Skin temperature'];
-
-type HistoryEntry = {
-  id: string;
-  recordedAt: string;
-  readings: Reading[];
-};
 
 function makeHistoryEntry(readings: Reading[]): HistoryEntry {
   const recordedAt = new Date().toISOString();
@@ -191,8 +186,8 @@ export default function App() {
         const saved = await AsyncStorage.getItem(PREFERENCES_KEY);
         if (saved) {
           const parsed: unknown = JSON.parse(saved);
-          if (Array.isArray(parsed)) {
-            const restored = AVAILABLE_METRICS.filter(metric => parsed.includes(metric));
+          const restored = sanitizeVisibleMetrics(parsed, AVAILABLE_METRICS);
+          if (restored) {
             preferencesRef.current = restored;
             if (active) setVisibleMetrics(restored);
           }
@@ -219,14 +214,7 @@ export default function App() {
         let restored: HistoryEntry[] = [];
         if (saved) {
           const parsed: unknown = JSON.parse(saved);
-          if (Array.isArray(parsed)) {
-            restored = parsed.filter(
-              (item): item is HistoryEntry =>
-                typeof item?.id === 'string' &&
-                typeof item?.recordedAt === 'string' &&
-                Array.isArray(item?.readings),
-            );
-          }
+          restored = sanitizeHistory(parsed, MAX_HISTORY_ITEMS);
         }
 
         if (!active) return;
