@@ -78,6 +78,70 @@ function HistoryCard({ entry }: { entry: HistoryEntry }) {
   );
 }
 
+function TrendCard({
+  label,
+  unit,
+  entries,
+}: {
+  label: string;
+  unit: string;
+  entries: HistoryEntry[];
+}) {
+  const points = entries
+    .slice(0, 20)
+    .reverse()
+    .flatMap(entry => {
+      const reading = entry.readings.find(item => item.label === label);
+      return reading ? [{ value: reading.value, recordedAt: entry.recordedAt }] : [];
+    });
+
+  if (points.length === 0) return null;
+
+  const values = points.map(point => point.value);
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  const latest = points[points.length - 1].value;
+  const firstTime = new Date(points[0].recordedAt).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  const lastTime = new Date(points[points.length - 1].recordedAt).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  const accessibilitySummary = `${label}. ${points.length} recent synthetic samples. Low ${minimum} ${unit}, high ${maximum} ${unit}, latest ${latest} ${unit}.`;
+
+  return (
+    <View style={styles.trendCard}>
+      <View style={styles.trendHeader}>
+        <Text style={styles.trendTitle}>{label}</Text>
+        <Text style={styles.trendLatest}>{latest} {unit}</Text>
+      </View>
+      <View accessible accessibilityRole="image" accessibilityLabel={accessibilitySummary} style={styles.chart}>
+        {points.map((point, index) => {
+          const height = maximum === minimum
+            ? 28
+            : 8 + ((point.value - minimum) / (maximum - minimum)) * 42;
+          return (
+            <View
+              key={`${point.recordedAt}-${index}`}
+              style={styles.chartColumn}
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+            >
+              <View style={[styles.chartBar, { height }]} />
+            </View>
+          );
+        })}
+      </View>
+      <View style={styles.trendFooter}>
+        <Text style={styles.trendRange}>Low {minimum} · High {maximum} {unit}</Text>
+        <Text style={styles.trendTime}>{firstTime}–{lastTime}</Text>
+      </View>
+    </View>
+  );
+}
+
 export default function App() {
   const [readings, setReadings] = useState(makeSyntheticReadings());
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -220,7 +284,22 @@ export default function App() {
             ) : history.length === 0 ? (
               <Text style={styles.emptyText}>No saved readings yet. New samples will appear here.</Text>
             ) : (
-              history.map(entry => <HistoryCard key={entry.id} entry={entry} />)
+              <>
+                <Text style={styles.trendsHeading}>Recent trends</Text>
+                <Text style={styles.trendsCaption}>
+                  Latest {Math.min(history.length, 20)} samples · each chart scales to its own range
+                </Text>
+                {readings.map(reading => (
+                  <TrendCard
+                    key={reading.label}
+                    label={reading.label}
+                    unit={reading.unit}
+                    entries={history}
+                  />
+                ))}
+                <Text style={styles.trendsHeading}>Saved readings</Text>
+                {history.map(entry => <HistoryCard key={entry.id} entry={entry} />)}
+              </>
             )}
             <Text style={styles.footer}>Up to {MAX_HISTORY_ITEMS} samples are kept on this device.</Text>
           </>
@@ -264,6 +343,18 @@ const styles = StyleSheet.create({
   historyMetric: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 },
   historyLabel: { color: '#69748c', fontSize: 14 },
   historyValue: { color: '#17213b', fontSize: 14, fontWeight: '600' },
+  trendsHeading: { color: '#17213b', fontSize: 17, fontWeight: '700', marginTop: 8, marginBottom: 5 },
+  trendsCaption: { color: '#69748c', fontSize: 13, lineHeight: 19, marginBottom: 11 },
+  trendCard: { backgroundColor: 'white', borderRadius: 14, padding: 16, marginBottom: 10 },
+  trendHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  trendTitle: { color: '#69748c', fontSize: 14, fontWeight: '600' },
+  trendLatest: { color: '#17213b', fontSize: 17, fontWeight: '700' },
+  chart: { height: 62, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 12, borderBottomWidth: 1, borderBottomColor: '#e8ebf3' },
+  chartColumn: { flex: 1, height: 54, justifyContent: 'flex-end', alignItems: 'center', marginHorizontal: 1 },
+  chartBar: { width: '58%', minWidth: 3, maxWidth: 12, backgroundColor: '#7182ce', borderTopLeftRadius: 4, borderTopRightRadius: 4 },
+  trendFooter: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
+  trendRange: { color: '#69748c', fontSize: 12 },
+  trendTime: { color: '#818ba0', fontSize: 12 },
   emptyText: { color: '#69748c', backgroundColor: 'white', borderRadius: 14, padding: 18, lineHeight: 21 },
   footer: { color: '#818ba0', fontSize: 12, marginTop: 20, marginBottom: 10, textAlign: 'center' },
 });
