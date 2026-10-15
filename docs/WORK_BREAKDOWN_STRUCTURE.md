@@ -7,7 +7,7 @@
 | WBS | Work package | Key outputs / completion evidence | Current status |
 |---|---|---|---|
 | 1.0 | Project foundation | Reproducible Expo/TypeScript repository, dependency lockfile, run instructions, Git history | Prototype repository and run instructions exist. |
-| 1.1 | Environment and app scaffold | Expo app starts on a supported development environment | App created; user reported web launch working. Mobile target validation is not recorded. |
+| 1.1 | Environment and app scaffold | Expo app starts on a supported development environment | Web app launched by the user and local web smoke-checked. No mobile test target is currently available; `adb` is absent and iOS simulator services are unavailable in the current environment. |
 | 1.2 | Repository hygiene | Source, documentation, and lockfile tracked; no secrets committed | Git repository exists. Review final archive contents before submission. |
 | 2.0 | Requirements and project planning | Prioritized scope, schedule, risk register, traceability, WBS, stakeholder and communication plans | Planning drafts exist, including stakeholder and communication plans; confirm official deadlines and assessment interpretation. |
 | 2.1 | Requirements baseline | Requirements status and traceability matrix linked to prototype evidence | Drafted in `REQUIREMENTS_STATUS.md` and `REQUIREMENTS_TRACEABILITY.md`. |

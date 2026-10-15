@@ -15,7 +15,7 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 | Scenario | Expected result | Result / platform / date |
 |---|---|---|
 | Start on web | App opens and shows the simulator notice. | Passed in the local Expo web preview, Codex in-app browser, 15 Oct 2026; browser/OS version not surfaced. |
-| Start on a mobile target | App opens and shows the same core screens. | Not recorded |
+| Start on a mobile target | App opens and shows the same core screens. | Not run, 15 Oct 2026: `adb` is not available; Xcode CoreSimulatorService reported no available runtime and could not connect. Use a physical device or working simulator when available. |
 | Observe Today while running | Synthetic values update approximately every three seconds. | Not recorded |
 | Observe step count during one local day | Synthetic step count does not decrease before the local day rolls over. | Not recorded |
 | Pause on Devices | Values stop changing and no new history entry is created while paused. | Not recorded |
