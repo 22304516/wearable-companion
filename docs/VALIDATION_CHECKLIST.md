@@ -18,6 +18,7 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 | Start on web | App opens and shows the simulator notice. | Passed in the local Expo web preview, Codex in-app browser, 15 Oct 2026; browser/OS version not surfaced. |
 | Start on a mobile target | App opens and shows the same core screens. | Not run, 15 Oct 2026: `adb` is not available; Xcode CoreSimulatorService reported no available runtime and could not connect. Use a physical device or working simulator when available. |
 | Authentication not configured | App clearly presents synthetic-only demo mode; configured mode requires sign-in. | Web preview, 15 Oct 2026: demo-mode notice appeared because no Supabase environment variables are set. Real sign-up/sign-in/session/logout flow remains unverified. |
+| Authentication form validation | Invalid email and too-short password show field errors before the Supabase request. | Web preview with placeholder environment values, 15 Oct 2026: malformed email showed “Enter a valid email address”; a valid-format placeholder email with a short password showed the 8-character validation message. No valid credentials were entered and no authentication request was submitted. |
 | Observe Today while running | Synthetic values update approximately every three seconds. | Not recorded |
 | Observe step count during one local day | Synthetic step count does not decrease before the local day rolls over. | Not recorded |
 | Pause on Devices | Values stop changing and no new history entry is created while paused. | Web smoke check, 15 Oct 2026: paused status appeared and selected-profile History count remained 21 after approximately 10 seconds. |
@@ -50,6 +51,8 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 **Automated checks:** `npx tsc --noEmit` passed; `npm run lint` passed; `git diff --check` passed. A separate Expo Doctor run on 15 October 2026 passed 21/21 checks with no issues. These checks do not verify native platforms or CSV download/share behavior.
 
 **Follow-up, 15 October 2026:** Added optional Supabase authentication and synthetic heart-rate threshold controls. The app bundle loaded in a local Expo web preview at `localhost:8084`; the unauthenticated state visibly identified itself as demo mode. With the 80 bpm threshold enabled, selecting the synthetic smartwatch produced an accessible in-app alert at 83 bpm. The configured authentication flow and native behavior were not tested because no Supabase project credentials or mobile target were available. The preview server was stopped after checking. A follow-up Expo Doctor run after adding test dependencies passed 21/21 checks; the new Jest suite passed 10 unit tests.
+
+**Authentication form check, 15 October 2026:** A temporary local web preview used only placeholder Supabase URL/key values. Invalid email and short password inputs displayed their validation messages. No valid credential or auth request was sent. The placeholder configuration was not saved in the repository; the preview was stopped.
 
 ## Evidence to retain
 
