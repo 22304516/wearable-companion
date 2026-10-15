@@ -1,0 +1,59 @@
+# Product backlog
+
+**Baseline:** 15 October 2026. This is a current-state backlog, not a reconstruction of a Jira board or past sprint results. The project was managed in Git and documentation; no Jira board was used. No work is assigned to a numbered sprint because actual sprint allocation and reporting were not recorded.
+
+**Estimate note:** Remaining-work sizes are rough planning estimates for one developer and exclude external waiting time. They are not recorded hours or estimates of work already completed. Re-estimate after official assessment instructions and test resources are confirmed.
+
+**Priority guide:** P0 is essential or time-sensitive for the capstone handover; P1 improves the core demonstration or reproducibility; P2 is useful after higher priorities; P3 is deferred or future scope. Priority does not override an external dependency or official assessment instruction.
+
+## Epics
+
+| Epic | Name | Scope |
+|---|---|---|
+| EPIC-01 | Authentication and user management | Real account access, session lifecycle, and separation. |
+| EPIC-02 | Wearable connectivity | Clearly labelled simulator; future BLE/NFC work only with compatible hardware. |
+| EPIC-03 | Real-time monitoring | Current readings, labels, units, source, and status. |
+| EPIC-04 | History and visualisation | Local records, time filters, summaries, trends, and export. |
+| EPIC-05 | Alerts | Configurable demonstration thresholds and future device notifications. |
+| EPIC-06 | Preferences | Dashboard, source, and display preferences. |
+| EPIC-07 | Administrator configuration | Restricted plot and device-type configuration. |
+| EPIC-08 | Security and reliability | Safe data boundaries, validation, dependency and failure handling. |
+| EPIC-09 | Testing and quality | Automated checks and platform-specific manual validation. |
+| EPIC-10 | Documentation and handover | Guides, project records, presentation, source archive, and forms checklist. |
+
+## Stories
+
+| ID / epic | User story | Acceptance criteria | Priority | Remaining estimate | Dependencies | Status / evidence |
+|---|---|---|---|---|---|---|
+| CONN-01 / EPIC-02 | As a demo user, I want selectable simulated wearable profiles so I can explore the interface without hardware. | Given the app is in demo mode, when I select either profile, then the chosen synthetic source is visible on Today and attached to subsequent history/export records; the interface says no hardware is connected. | P0 | Done | None | Implemented; web selection and persistence checked. See `src/simulator.ts`, `App.tsx`, and `VALIDATION_CHECKLIST.md`. |
+| DATA-01 / EPIC-03 | As a demo user, I want current sample metrics with units and source labels so I can understand the example data. | Given the simulator is running, when a sample refreshes, then Today shows the supported synthetic metrics, units, simulator status, and a clear synthetic-data notice. | P0 | Done | CONN-01 | Implemented; web rendering checked. Physical sensor readings are not provided. |
+| DATA-02 / EPIC-04 | As a demo user, I want a bounded local history with time filters so I can review recent synthetic samples. | Given saved samples exist, when I choose 24 hours, 7 days, or All, then only records in the selected range are summarized and listed; empty/loading/error states are shown as applicable. | P0 | Done | DATA-01 | Implemented; web filters checked with recent records. Retention is 200 samples (about 10 minutes at the current rate); mobile persistence and old-date boundaries remain unverified. |
+| DATA-03 / EPIC-04 | As a demo user, I want per-metric summaries and simple trends so I can understand sample variation. | Given samples exist in the selected range, when History loads, then each metric shows average, low, high, latest, count, and an accessible chart summary for up to 20 recent samples. | P1 | Done | DATA-02 | Implemented; web cards and labels rendered. Calculation and assistive-technology reviews remain partial. |
+| PREF-01 / EPIC-06 | As a demo user, I want to choose visible metrics, simulator profile, and temperature units so the display suits my preference. | Given I change a preference, when I revisit or reload the app, then the supported choice is restored and values are labelled with the selected unit. | P1 | Done | CONN-01 | Implemented; web persistence for profile/unit and display conversion checked. Native persistence and CSV unit export remain unverified. |
+| ALERT-01 / EPIC-05 | As a demo user, I want an optional heart-rate threshold alert so I can see how an alert interaction may work. | Given the alert is enabled, when a synthetic heart-rate sample reaches the configured threshold, then Today shows an accessible in-app notice labelled synthetic and non-medical. | P2 | Done | DATA-01 | Implemented; web alert shown with a synthetic smartwatch sample. No OS notification or device event is implemented. |
+| AUTH-01 / EPIC-01 | As a user, I want real registration, sign-in, sign-out, validation, and restored sessions so access is account-based when authentication is configured. | Given valid provider configuration, when I register/sign in/out or reopen the app, then provider responses govern access, errors are surfaced, and signed-out users cannot enter the account view. | P0 | M | Owner-created Supabase project, publishable key, email settings, and test account | Code implemented; real provider lifecycle remains unverified. See `AUTH_SETUP.md`. |
+| SEC-01 / EPIC-08 | As a project owner, I want an approved security design before real personal or health data is used. | Before real data is introduced, native sessions use an approved secure-storage design, remote tables enforce tested per-user RLS, retention/deletion is defined, and secrets are absent from the app bundle/repository. | P0 | L | External Supabase project; privacy/security requirements; mobile target | Not complete. Synthetic-data-only restriction remains. |
+| CONN-02 / EPIC-02 | As a project owner, I want verified BLE discovery and connection behavior for a selected wearable. | Given a compatible wearable and platform, when discovery, connect, disconnect, and reconnect are exercised, then actual device identity/status and supported readings are shown; failures and permissions are handled. | P2 | XL | Compatible documented wearable, Android/iOS test target, protocol access | Blocked by unavailable hardware and mobile test target; no BLE implementation. |
+| NFC-01 / EPIC-02 | As a project owner, I want a justified NFC interaction if the selected device supports one. | Given a compatible tag/device and platform, when the user taps it, then the app reads only a documented supported interaction and does not describe NFC as a continuous sensor link. | P3 | L | NFC-capable mobile target, compatible tag/device, platform validation | Deferred by feasibility decision; see `NFC_FEASIBILITY.md`. |
+| ADMIN-01 / EPIC-07 | As an authorised administrator, I want to configure plot labels, units, chart types, and supported metrics for device types. | Given an authenticated administrator, when a valid configuration is saved, then it persists and ordinary users cannot read or change restricted configuration. | P3 | XL | Administrator identity/authorization model, schema, security review | Not implemented; no administrator role, API, or database. |
+| QA-01 / EPIC-09 | As a maintainer, I want a recorded target-platform validation run so I can report which environments were actually checked. | Given a working target, when core navigation, simulator, preferences, History, alert, and export workflows are exercised, then platform/version, app commit, observed results, and issues are recorded. | P0 | M | Android/iOS device or simulator; regular browser for download inspection | Partial web checks recorded. Mobile test target unavailable; web CSV file contents not captured. |
+| QA-02 / EPIC-09 | As a maintainer, I want automated checks on the committed source so regressions are visible. | Given a source change, when the existing Jest, lint, and TypeScript commands run, then results and scope limitations are recorded. | P1 | Done | Node/npm installation | Passed on 15 Oct 2026: 10 pure-helper tests; lint and TypeScript check. These do not cover UI, provider workflows, native modules, or hardware. |
+| DOC-01 / EPIC-10 | As a demo user, I want plain-language instructions and actual screenshots so I can run and navigate the prototype. | Given the project and a supported browser, when I follow the guide, then setup, simulator, History, settings, alerts, export limits, privacy, and troubleshooting match the app; screenshots are reviewed and current. | P1 | M | Regular browser screenshot capture; final app review | Guide drafted; screenshots are not included yet. See `USER_GUIDE.md`. |
+| HAND-01 / EPIC-10 | As a presenter, I want a concise presentation grounded in evidence so I can explain the project accurately. | Given actual repository evidence, when I present, then all ten required topics are covered, missing team/sprint details are marked, and limitations are stated. | P1 | Done | Official assessment details for final personalization | Draft prepared in task outputs; rehearsal and native PowerPoint review pending. |
+| HAND-02 / EPIC-10 | As a maintainer, I want a clean source archive so the project can be reproduced without local secrets or caches. | Given a committed source tree, when the archive is opened, then source, docs, and lockfile are present and private environment files, caches, installed dependencies, and Git history are absent. | P1 | Done | Current committed tree | ZIP prepared in task outputs from the latest documented commit; checksum supplied separately. Rebuild after repository changes. |
+| ADMIN-02 / EPIC-10 | As a student, I want a checklist of information needed for the official group-assignment forms so I can complete them accurately. | Given the official forms and unit instructions, when I prepare authorship and effort declarations, then names, actual contributions, effort evidence, signatures, dates, and submission details are checked without guessing another student's input. | P0 | S | Official current forms, registered team roster, actual contribution/effort records, teaching-team clarification | Checklist prepared in `ADMINISTRATIVE_CHECKLIST.md`; the forms themselves and declarations are not completed. |
+
+## Planning and status rules
+
+- Stories describe the current code or remaining work; `Implemented` does not mean verified on every target.
+- Do not assign a numbered sprint or report a sprint result without actual records. The dated 13-week schedule in `PROJECT_PLAN.md` is a planning baseline, not a history of completed work.
+- Update status only when a code change, test result, external dependency, or decision provides evidence.
+- Keep synthetic demonstration behavior distinct from production or hardware capability.
+
+## Definition of Ready
+
+A story is ready for scheduling when its user and outcome are clear, acceptance criteria can be observed, its relevant requirements and data/security boundaries are named, dependencies and a suitable test target are identified, and a rough remaining-work size is recorded. A story that needs unavailable hardware, provider configuration, official assessment details, or another person's declaration stays blocked or unscheduled until that dependency is resolved.
+
+## Definition of Done
+
+A story is done only when the acceptance criteria are implemented, relevant automated/manual checks have actual recorded results, the requirements traceability and user/maintenance documentation match observed behavior, limitations are explicit, and the change is committed without secrets. A simulator result does not satisfy a hardware criterion, and a web check does not establish native-platform support.

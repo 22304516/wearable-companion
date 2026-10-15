@@ -20,7 +20,7 @@
 | FR-10 | Authorized administrator configuration of plots and device/sensor types | Not implemented | No administrator interface, authorization, or configuration persistence exists. | Requires an authorization model; hiding controls alone would not satisfy this requirement. |
 | FR-11 | Multiple device support and distinguish identity/type/status/source | Partial: multiple simulated profiles | Two selectable synthetic profiles have distinct IDs, names, types, and generated sample offsets. History and CSV preserve source identity. | No physical device registry or simultaneous hardware connections. Simulator coverage does not verify hardware support. |
 | FR-12 | Android and iOS support | Partial: cross-platform target selected | Expo/React Native project targets Android and iOS and also runs on web. The user reported the web app working. | Android/iOS behavior has not been recorded as manually verified in the project evidence. Record each device/OS and build method after testing. |
-| FR-13 | Accessibility and usability | Partial | Responsive layout, labelled controls, tab/checkbox states, and visible simulator/error notices are present. | No formal screen-reader, contrast, text-scaling, touch-target, or usability audit is recorded. |
+| FR-13 | Accessibility and usability | Partial | Responsive layout, labelled controls, visible simulator/error notices, and radio choices with exposed web selected state and Space-key operation are present. See `VALIDATION_CHECKLIST.md`. | No full native screen-reader, contrast, text-scaling, touch-target, or usability audit is recorded. |
 
 ## Cross-cutting project objectives
 
@@ -33,7 +33,7 @@ The prompt states these as quality objectives rather than numbered functional re
 | Maintainability | Partial | Simulator profiles, history summaries, storage validation, CSV formatting, and platform export code are separated into `src/` modules. There is not yet a real device-source interface or BLE adapter. |
 | Performance | Not assessed | History is capped at 200 entries, but no performance measurements have been recorded. |
 | Testing and quality assurance | Partially checked | TypeScript, ESLint, Expo Doctor, and 10 pure-helper Jest unit tests have passed. Limited web smoke checks are recorded in `VALIDATION_CHECKLIST.md`; the UI, configured auth-provider, native, and hardware scenarios are not covered by the unit suite. |
-| Documentation and handover | Initial deliverables drafted | User guide, proposed demo checklist, maintenance guide, risk register, project plan, validation checklist, matrix, architecture notes, WBS, stakeholder register, and proposed communication plan exist. Screenshots, reflection, presentation, archive, and administrative checklist remain to be prepared or confirmed. |
+| Documentation and handover | Core drafts prepared; personalization and evidence remain | User guide, proposed demo checklist, maintenance guide, risk register, project plan, product backlog, test plan, validation checklist, matrix, architecture notes, WBS, stakeholder register, communication plan, project reflection draft, and administrative checklist exist. Presentation and source ZIP are in the task outputs folder. Actual app screenshots, owner review of the reflection, rehearsal, official form completion, and target-platform evidence remain outstanding. |
 
 ## Verification record
 

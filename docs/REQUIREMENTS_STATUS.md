@@ -15,8 +15,8 @@
 | Authentication | Supabase email/password integration implemented; external project not configured | Configured mode gates access, supports sign-up/sign-in/session restore/sign-out, and scopes local app keys by account ID. Follow [AUTH_SETUP.md](./AUTH_SETUP.md) to connect a project. No cloud data storage or RLS is implemented or verified. |
 | NFC | Not implemented | Requires compatible hardware and platform validation. |
 | Alerts/notifications | Not implemented | Prioritize after core workflow. |
-| User/maintenance/project documentation | Initial guides drafted | User guide, maintenance guide, and validation checklist describe the current prototype; add screenshots and actual validation evidence during review. |
-| Testing | Static checks and limited web smoke check recorded | TypeScript, lint, and Expo Doctor pass; web History screen rendered and filter controls were operated. Mobile target is unavailable in the current environment; broader workflows and date-cutoff boundaries remain unverified. |
+| User/maintenance/project documentation | Draft guides and project records prepared | User guide, maintenance guide, product backlog, test plan, reflection draft, and validation evidence describe the current prototype; actual app screenshots and owner review of the reflection remain outstanding. |
+| Testing | Static checks and targeted web checks recorded | TypeScript, lint, Expo Doctor, and 10 pure-helper tests pass; web History and key radio keyboard states were checked. Mobile target is unavailable in the current environment; provider, export file contents, broader workflows, and historical boundaries remain unverified. |
 
 This table is a baseline. Update it as implementation changes.
 

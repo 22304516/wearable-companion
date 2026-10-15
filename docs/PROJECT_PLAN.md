@@ -29,6 +29,8 @@ Dates are planning assumptions derived from the supplied week numbers, not confi
 
 ## Initial backlog
 
+The current story-level backlog, acceptance criteria, estimates, dependencies, and evidence-based statuses are maintained in [PRODUCT_BACKLOG.md](./PRODUCT_BACKLOG.md). The schedule below remains a planning baseline; it is not a record of actual sprint completion.
+
 1. **P0 — Foundation:** establish reproducible app setup and record requirements.
 2. **P0 — Simulator:** show synthetic metrics and an explicit simulated-device state.
 3. **P1 — Core experience:** add navigation, device management states, validation, and useful empty/error states.
