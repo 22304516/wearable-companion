@@ -29,10 +29,10 @@
 | 5.1 | User guide | Setup, screens, workflows, troubleshooting, screenshots | Written in `USER_GUIDE.md`; screenshots are still to be captured and reviewed. |
 | 5.2 | System maintenance documentation | Architecture, dependencies, local data, operations, known gaps | Written in `SYSTEM_MAINTENANCE.md` and `ARCHITECTURE.md`; keep in sync with source. |
 | 5.3 | Requirements and test evidence | Traceability and completed validation records | Traceability exists; manual results remain unrecorded. |
-| 6.0 | Demonstration and submission handover | Reliable demo, final presentation, source archive, administrative checklist | Not complete. Prepare after platform verification and scope review. |
+| 6.0 | Demonstration and submission handover | Reliable demo, final presentation, source archive, administrative checklist | Presentation draft and clean source archive are prepared in the task `outputs` folder. Rehearsal, supported-platform validation, and official administrative requirements remain pending. |
 | 6.1 | Demonstration materials | Timed sequence, setup, expected outcomes, synthetic data, fallback, limitations | Drafted in `DEMO_CHECKLIST.md`; assessment format and rehearsal still need confirmation. |
 | 6.2 | Scrum Master presentation | Project overview, actual progress, individual responsibilities, risks, reflection, next steps | 10-slide draft prepared on 15 Oct 2026 at `outputs/2026-CSE3CAP_scrum_master_presentation_draft.pptx`. No supplied template was present. Team and sprint numbers are marked not recorded; confirm assessment details and personalize before presenting. Structural, font, and layout checks passed; rehearsal and native PowerPoint review remain pending. |
-| 6.3 | Final source archive | Reproducible source and docs; exclude secrets, caches, and regenerable build artifacts | Not prepared; review `package-lock.json` and archive contents before submission. |
+| 6.3 | Final source archive | Reproducible source and docs; exclude secrets, caches, and regenerable build artifacts | Clean ZIP snapshot prepared from the committed repository at `outputs/wearable-companion-source.zip`. Includes tracked source, docs, and lockfile; excludes Git history, installed dependencies, Expo cache, and untracked local secrets. Rebuild the archive after any repository changes. |
 | 6.4 | University administration | Authorship and effort-form information checklist, based on actual declarations | Not prepared; do not invent signatures, contributions, percentages, or approvals. |
 
 ## Work-package completion rule
