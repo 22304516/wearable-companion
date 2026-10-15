@@ -20,7 +20,7 @@
 | 3.4 | Preferences | Persist selected dashboard metrics and restore defaults | Implemented locally; manual persistence check remains. |
 | 3.5 | Data export | CSV export on web and native share workflow; synthetic-data column | Implemented; verify file contents/download and native sharing on each target. |
 | 4.0 | Quality assurance and security | Recorded checks, resolved defects, supported-platform limits, privacy/security decisions | TypeScript and lint checks have passed during development; manual validation is pending. Authentication, backend, and production security are not implemented. |
-| 4.1 | Automated/static checks | Type check, lint, dependency/config review recorded with commit and date | TypeScript and lint passed in recent development; no full test suite or Expo Doctor result is recorded. |
+| 4.1 | Automated/static checks | Type check, lint, dependency/config review recorded with commit and date | TypeScript and lint passed; Expo Doctor passed 21/21 checks with no issues on 15 Oct 2026. No full test suite is recorded. |
 | 4.2 | Manual workflow verification | Complete `VALIDATION_CHECKLIST.md` with actual platform/version/results | Not recorded yet. |
 | 4.3 | Accessibility and usability review | Check contrast, keyboard/touch use, screen-reader labels, text scaling, and responsive layout | Not recorded yet. |
 | 4.4 | Authentication/security scope | Real authentication decision, authorization, per-user data design, privacy review | Required by FR-01 in the source prompt; implementation deferred pending backend/provider decision. No real user data should be entered. |

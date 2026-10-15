@@ -8,7 +8,7 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 |---|---|---|
 | TypeScript type check | `npx tsc --noEmit` | Passed, 15 Oct 2026 |
 | ESLint | `npm run lint` | Passed, 15 Oct 2026 |
-| Expo configuration/dependency review | `npx expo-doctor` | Not recorded |
+| Expo configuration/dependency review | `npx expo-doctor` | Passed 21/21 checks, no issues, 15 Oct 2026 (`expo-doctor@1.20.4`) |
 
 ## Manual scenarios
 
@@ -40,7 +40,7 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 
 **Observed:** app loaded; History range controls, summary cards, and trend cards rendered; selecting 7 days and All updated the displayed range label and available sample count. The only saved samples were recent, so the date cutoff logic was not manually verified with older sample data. Expo also reported an unknown error while installing React Native DevTools; the web bundle completed and the app rendered.
 
-**Automated checks:** `npx tsc --noEmit` passed; `npm run lint` passed; `git diff --check` passed. These checks do not verify native platforms or CSV download/share behavior.
+**Automated checks:** `npx tsc --noEmit` passed; `npm run lint` passed; `git diff --check` passed. A separate Expo Doctor run on 15 October 2026 passed 21/21 checks with no issues. These checks do not verify native platforms or CSV download/share behavior.
 
 ## Evidence to retain
 
