@@ -145,7 +145,8 @@ function TrendCard({
 export default function App() {
   const [readings, setReadings] = useState(makeSyntheticReadings());
   const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [screen, setScreen] = useState<'today' | 'history'>('today');
+  const [screen, setScreen] = useState<'today' | 'history' | 'devices'>('today');
+  const [simulatorRunning, setSimulatorRunning] = useState(true);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [storageError, setStorageError] = useState(false);
   const historyRef = useRef<HistoryEntry[]>([]);
@@ -196,7 +197,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!historyLoaded) return;
+    if (!historyLoaded || !simulatorRunning) return;
 
     const timer = setInterval(() => {
       const nextReadings = makeSyntheticReadings();
@@ -212,7 +213,7 @@ export default function App() {
     }, REFRESH_INTERVAL_MS);
 
     return () => clearInterval(timer);
-  }, [historyLoaded]);
+  }, [historyLoaded, simulatorRunning]);
 
   async function clearHistory() {
     historyRef.current = [];
@@ -233,7 +234,9 @@ export default function App() {
         <Text style={styles.subtitle}>A simple place to review wearable data.</Text>
 
         <View style={styles.notice}>
-          <Text style={styles.noticeTitle}>Simulator active</Text>
+          <Text style={styles.noticeTitle}>
+            {simulatorRunning ? 'Simulator running' : 'Simulator paused'}
+          </Text>
           <Text style={styles.noticeText}>
             These are synthetic sample readings. No wearable is connected and no health data is being collected.
           </Text>
@@ -250,6 +253,7 @@ export default function App() {
         <View style={styles.navigation} accessibilityRole="tablist">
           <NavigationButton label="Today" selected={screen === 'today'} onPress={() => setScreen('today')} />
           <NavigationButton label="History" selected={screen === 'history'} onPress={() => setScreen('history')} />
+          <NavigationButton label="Devices" selected={screen === 'devices'} onPress={() => setScreen('devices')} />
         </View>
 
         {screen === 'today' ? (
@@ -263,7 +267,7 @@ export default function App() {
             </View>
             <Text style={styles.footer}>Synthetic readings refresh every 3 seconds and are saved locally.</Text>
           </>
-        ) : (
+        ) : screen === 'history' ? (
           <>
             <View style={styles.historyHeading}>
               <View style={styles.historyHeadingCopy}>
@@ -303,6 +307,36 @@ export default function App() {
             )}
             <Text style={styles.footer}>Up to {MAX_HISTORY_ITEMS} samples are kept on this device.</Text>
           </>
+        ) : (
+          <>
+            <Text style={styles.section}>Device simulator</Text>
+            <View style={styles.deviceCard}>
+              <Text style={styles.deviceName}>Demo wearable</Text>
+              <Text style={styles.deviceStatus}>Simulator only · no hardware connection</Text>
+              <View style={styles.deviceDivider} />
+              <Text style={styles.controlLabel}>Sample generation</Text>
+              <Text style={styles.controlValue}>
+                {simulatorRunning ? 'Running · new sample every 3 seconds' : 'Paused · no new samples are being recorded'}
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={simulatorRunning ? 'Pause synthetic sample generation' : 'Resume synthetic sample generation'}
+                onPress={() => setSimulatorRunning(running => !running)}
+                style={[styles.simulatorButton, simulatorRunning && styles.pauseButton]}
+              >
+                <Text style={styles.simulatorButtonText}>
+                  {simulatorRunning ? 'Pause sample generation' : 'Resume sample generation'}
+                </Text>
+              </Pressable>
+            </View>
+            <View style={styles.deviceNote}>
+              <Text style={styles.deviceNoteTitle}>What this control does</Text>
+              <Text style={styles.deviceNoteText}>
+                It pauses or resumes synthetic samples in this app. It does not scan for, pair with, or send commands to a real wearable.
+              </Text>
+            </View>
+            <Text style={styles.footer}>Sample history remains saved when generation is paused.</Text>
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -331,8 +365,18 @@ const styles = StyleSheet.create({
   metricValue: { color: '#17213b', fontSize: 26, fontWeight: '700', marginTop: 7 },
   unit: { color: '#69748c', fontSize: 15, fontWeight: '500' },
   device: { backgroundColor: 'white', borderRadius: 14, padding: 17 },
+  deviceCard: { backgroundColor: 'white', borderRadius: 14, padding: 18 },
   deviceName: { color: '#17213b', fontSize: 16, fontWeight: '700' },
   deviceStatus: { color: '#69748c', marginTop: 5 },
+  deviceDivider: { height: 1, backgroundColor: '#e8ebf3', marginVertical: 17 },
+  controlLabel: { color: '#69748c', fontSize: 13, fontWeight: '600' },
+  controlValue: { color: '#17213b', fontSize: 15, lineHeight: 21, marginTop: 5 },
+  simulatorButton: { alignItems: 'center', backgroundColor: '#5263a7', borderRadius: 11, padding: 13, marginTop: 17 },
+  pauseButton: { backgroundColor: '#4d5a82' },
+  simulatorButtonText: { color: 'white', fontSize: 14, fontWeight: '700' },
+  deviceNote: { backgroundColor: '#eef1fa', borderRadius: 13, padding: 15, marginTop: 14 },
+  deviceNoteTitle: { color: '#303f80', fontSize: 14, fontWeight: '700', marginBottom: 5 },
+  deviceNoteText: { color: '#495577', fontSize: 13, lineHeight: 19 },
   historyHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 11 },
   historyHeadingCopy: { flex: 1 },
   historyCaption: { color: '#69748c', fontSize: 13, marginTop: -5 },

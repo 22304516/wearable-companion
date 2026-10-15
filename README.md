@@ -15,7 +15,7 @@ Scan the QR code with Expo Go, or use the terminal shortcuts for a simulator. No
 
 ## Current status
 
-- Implemented: a dashboard and history view for synthetic readings. Samples refresh every three seconds and up to 200 timestamped entries are stored locally on the device. The History view includes recent trend bars and can clear saved samples.
+- Implemented: a dashboard, simulator controls, and history view for synthetic readings. Samples refresh every three seconds while the simulator is running; generation can be paused or resumed. Up to 200 timestamped entries are stored locally. The History view includes recent trend bars and can clear saved samples.
 - Not implemented: accounts/authentication, real BLE/NFC, alerts, exports, backend, production security, and a full accessibility audit.
 - No physical wearable is available. Device status and readings must remain clearly identified as simulated.
 
