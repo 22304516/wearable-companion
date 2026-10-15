@@ -28,11 +28,11 @@ The prompt states these as quality objectives rather than numbered functional re
 
 | Objective | Status | Evidence / remaining work |
 |---|---|---|
-| Security and privacy | Partial for a synthetic-data prototype | Supabase connections use TLS and local records are scoped by account ID when authentication is configured. The client uses only a publishable key. Auth session storage and app records use AsyncStorage on native platforms; no backend data access, RLS, secure session vault, account deletion, or production data-retention design is present. Do not use with real personal/health data. |
+| Security and privacy | Partial for a synthetic-data prototype | Supabase connections use TLS and local records are scoped by account ID when authentication is configured. The client uses only a publishable key. Auth session storage and app records use AsyncStorage on native platforms; no backend data access, RLS, secure session vault, account deletion, or production data-retention design is present. The npm dependency audit reports unresolved transitive advisories; see `DEPENDENCY_AUDIT.md`. Do not use with real personal/health data. |
 | Reliability and error handling | Partial | Persisted records are validated, and storage errors have visible notices. Manual failure/recovery scenarios remain unrecorded. |
 | Maintainability | Partial | Simulator profiles, history summaries, storage validation, CSV formatting, and platform export code are separated into `src/` modules. There is not yet a real device-source interface or BLE adapter. |
 | Performance | Not assessed | History is capped at 200 entries, but no performance measurements have been recorded. |
-| Testing and quality assurance | Partially checked | TypeScript, ESLint, and Expo Doctor have passed. Limited web smoke checks for history filters and simulator source selection are recorded in `VALIDATION_CHECKLIST.md`; most manual scenarios and mobile/hardware tests remain unverified. |
+| Testing and quality assurance | Partially checked | TypeScript, ESLint, Expo Doctor, and 10 pure-helper Jest unit tests have passed. Limited web smoke checks are recorded in `VALIDATION_CHECKLIST.md`; the UI, configured auth-provider, native, and hardware scenarios are not covered by the unit suite. |
 | Documentation and handover | Initial deliverables drafted | User guide, proposed demo checklist, maintenance guide, risk register, project plan, validation checklist, matrix, architecture notes, WBS, stakeholder register, and proposed communication plan exist. Screenshots, reflection, presentation, archive, and administrative checklist remain to be prepared or confirmed. |
 
 ## Verification record

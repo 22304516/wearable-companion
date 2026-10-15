@@ -12,10 +12,14 @@ Wearable Companion is a React Native application built with Expo SDK 57 and Type
 | `src/simulator.ts` | Produces synthetic demo metrics for two selectable profiles. It does not access Bluetooth or hardware. |
 | `src/storage.ts` | Validates and normalizes locally restored history and metric preferences; history entries may include simulator source identity. |
 | `src/history.ts` | Filters persisted synthetic records by rolling time range and calculates per-metric summaries. |
+| `src/alerts.ts` | Sanitizes heart-rate demo-alert preferences and evaluates the synthetic threshold. |
+| `src/authClient.ts` / `src/AuthScreen.tsx` | Optional Supabase email/password client, session refresh, registration, and sign-in screen. |
+| `__tests__/core-logic-test.ts` | Focused unit coverage for the pure history, storage, unit, CSV, simulator, and alert helpers. |
 | `src/units.ts` | Converts canonical Celsius samples for display/export when Fahrenheit is selected. |
 | `src/csv.ts` | Formats the saved synthetic history as CSV and creates export filenames. |
 | `src/exportCsv.ts` / `src/exportCsv.web.ts` | Platform-specific native share and browser download implementations. |
 | `docs/ARCHITECTURE.md` | Component diagram, data flow, decisions, and known architecture gaps. |
+| `docs/DEPENDENCY_AUDIT.md` | Dated npm audit findings and the reason no forced downgrade was applied. |
 | `docs/` | Project plan, requirements status, risk register, user guide, maintenance guide, and validation checklist. |
 | `package.json` | Expo scripts and runtime/development dependencies. |
 
@@ -25,12 +29,14 @@ The app uses AsyncStorage, which is persistent but unencrypted key-value storage
 
 | Key | Contents |
 |---|---|
-| `wearable-companion.synthetic-history.v1` | Up to 200 timestamped entries; each entry contains synthetic metrics and, for new samples, profile ID/name/type. At three-second sampling, this retains about ten minutes of continuous history. |
-| `wearable-companion.visible-metrics.v1` | Labels selected for display on the Today dashboard. |
-| `wearable-companion.selected-simulator.v1` | Selected synthetic profile ID. |
-| `wearable-companion.temperature-unit.v1` | Temperature display choice (`C` or `F`); stored sample values remain in Celsius. |
+| `wearable-companion.synthetic-history.v1` (demo) / `wearable-companion.user.<user-id>.synthetic-history.v1` (configured account) | Up to 200 timestamped synthetic entries with source identity. At three-second sampling, about ten minutes of continuous history. |
+| `wearable-companion.visible-metrics.v1` (demo) / account-scoped equivalent | Labels selected for display on the Today dashboard. |
+| `wearable-companion.selected-simulator.v1` (demo) / account-scoped equivalent | Selected synthetic profile ID. |
+| `wearable-companion.temperature-unit.v1` (demo) / account-scoped equivalent | Temperature display choice (`C` or `F`); stored sample values remain in Celsius. |
+| `wearable-companion.alert-settings.v1` (demo) / account-scoped equivalent | Whether the synthetic heart-rate alert is enabled and its threshold. |
+| Supabase Auth session | Persisted by the Supabase client (AsyncStorage on native, browser storage on web); see the security limitations in `AUTH_SETUP.md`. |
 
-History and preferences are local to the app/browser installation. They are not synchronized, backed up, encrypted, or associated with an account. Do not store real health data in this prototype. To clear history, use **History → Clear**. To restore the default metric selection, use **Settings → Show all readings**. Clearing app/browser storage removes all four keys.
+History and preferences remain local to the app/browser installation, with separate key namespaces for each configured account. They are not synchronized, backed up, or encrypted. Do not store real health data in this prototype. To clear history, use **History → Clear**. To restore the default metric selection, use **Settings → Show all readings**. Clearing app/browser storage removes the local records and settings.
 
 ## Development setup and maintenance commands
 
@@ -41,6 +47,7 @@ npm install
 npx expo start
 npx expo start --web
 npm run lint
+npm test
 npx tsc --noEmit
 npx expo-doctor
 ```
@@ -60,7 +67,7 @@ Use `npx expo install <package>` for Expo-compatible native dependencies. Rechec
 
 ## Security and future hardware work
 
-Provider-backed account registration/sign-in is implemented but remains unconfigured and unverified. The current demo heart-rate alert is an in-app threshold only; no system notification channel or device-event alert is implemented. Authorization for remote data, secure session storage, remote records, BLE, NFC, and real device management are not implemented. Do not add a client-side password check as a substitute for authentication. Before handling real user or health information, define the threat model, data-retention policy, secure session design, RLS policies, consent requirements, and applicable university/project requirements. Real BLE/NFC work requires supported hardware and platform testing; simulator behavior is not evidence of hardware connectivity.
+Provider-backed account registration/sign-in is implemented but remains unconfigured and unverified. The current demo heart-rate alert is an in-app threshold only; no system notification channel or device-event alert is implemented. Authorization for remote data, secure session storage, remote records, BLE, and real device management are not implemented. NFC feasibility and the scope decision are recorded in `NFC_FEASIBILITY.md`. Do not add a client-side password check as a substitute for authentication. Before handling real user or health information, define the threat model, data-retention policy, secure session design, RLS policies, consent requirements, and applicable university/project requirements. Real BLE/NFC work requires supported hardware and platform testing; simulator behavior is not evidence of hardware connectivity.
 
 ## Release and handover
 

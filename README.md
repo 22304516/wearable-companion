@@ -11,6 +11,8 @@ npm install
 npx expo start
 ```
 
+Run the focused pure-logic unit tests with `npm test -- --ci`; `npm run lint` and `npx tsc --noEmit` check the source and types.
+
 Scan the QR code with Expo Go, or use the terminal shortcuts for a simulator. Without auth credentials, the app runs in synthetic-only demo mode.
 
 ## Authentication
@@ -26,3 +28,5 @@ The app includes Supabase email/password registration and sign-in. To enable it,
 - NFC feasibility is documented in `docs/NFC_FEASIBILITY.md`; no tag reader or real NFC workflow is implemented.
 
 See `docs/USER_GUIDE.md` for app workflows, `docs/DEMO_CHECKLIST.md` for the proposed demonstration flow, `docs/SYSTEM_MAINTENANCE.md` for technical handover, `docs/ARCHITECTURE.md` for architecture and decisions, `docs/VALIDATION_CHECKLIST.md` for checks to perform and record, `docs/REQUIREMENTS_TRACEABILITY.md` for requirement coverage and gaps, `docs/WORK_BREAKDOWN_STRUCTURE.md` for remaining deliverables, and `docs/STAKEHOLDER_REGISTER.md` plus `docs/COMMUNICATION_PLAN.md` for proposed project engagement. The project plan, risk register, and requirements status are also in `docs/`. Keep results based on actual work and evidence; do not record planned checks as completed.
+
+See [docs/DEPENDENCY_AUDIT.md](./docs/DEPENDENCY_AUDIT.md) for the current transitive npm audit findings and upgrade constraint.

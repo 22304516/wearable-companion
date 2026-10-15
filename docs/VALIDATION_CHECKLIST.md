@@ -8,6 +8,7 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 |---|---|---|
 | TypeScript type check | `npx tsc --noEmit` | Passed, 15 Oct 2026 |
 | ESLint | `npm run lint` | Passed, 15 Oct 2026 |
+| Core logic unit tests | `npm test -- --ci` | Passed, 10 tests in 1 suite, 15 Oct 2026. Covers pure helpers only; not UI, auth-provider workflows, native modules, or hardware. |
 | Expo configuration/dependency review | `npx expo-doctor` | Passed 21/21 checks, no issues, 15 Oct 2026 (`expo-doctor@1.20.4`) |
 
 ## Manual scenarios
@@ -48,7 +49,7 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 
 **Automated checks:** `npx tsc --noEmit` passed; `npm run lint` passed; `git diff --check` passed. A separate Expo Doctor run on 15 October 2026 passed 21/21 checks with no issues. These checks do not verify native platforms or CSV download/share behavior.
 
-**Follow-up, 15 October 2026:** Added optional Supabase authentication and synthetic heart-rate threshold controls. The app bundle loaded in a local Expo web preview at `localhost:8084`; the unauthenticated state visibly identified itself as demo mode. With the 80 bpm threshold enabled, selecting the synthetic smartwatch produced an accessible in-app alert at 83 bpm. The configured authentication flow and native behavior were not tested because no Supabase project credentials or mobile target were available. The preview server was stopped after checking.
+**Follow-up, 15 October 2026:** Added optional Supabase authentication and synthetic heart-rate threshold controls. The app bundle loaded in a local Expo web preview at `localhost:8084`; the unauthenticated state visibly identified itself as demo mode. With the 80 bpm threshold enabled, selecting the synthetic smartwatch produced an accessible in-app alert at 83 bpm. The configured authentication flow and native behavior were not tested because no Supabase project credentials or mobile target were available. The preview server was stopped after checking. A follow-up Expo Doctor run after adding test dependencies passed 21/21 checks; the new Jest suite passed 10 unit tests.
 
 ## Evidence to retain
 
