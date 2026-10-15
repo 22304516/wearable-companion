@@ -37,7 +37,7 @@ This document combines planned checks with a results log. Record dates, platform
 | Review range summaries | Average, low, high, latest, and sample count match the selected records for each metric. | Not recorded |
 | Export a selected History range | CSV contains only records in the selected profile/range and includes device ID/name/type plus the synthetic-data marker. | Not recorded |
 | Export in Fahrenheit mode | CSV skin-temperature values use °F; stored readings and other metric values remain unchanged. | Not recorded |
-| Export history on web | A CSV downloads with timestamp, device ID/name/type, metric, value, unit, and `is_synthetic=true` columns. | Not recorded |
+| Export history on web | A CSV downloads with timestamp, device ID/name/type, metric, value, unit, and `is_synthetic=true` columns. | Export action resolved in an isolated local preview, 15 Oct 2026: the app reported “CSV export is ready with 85 synthetic samples from this range.” The in-app browser did not expose the downloaded file for inspection, so its columns and row contents remain unverified. |
 | Export history on mobile | The share sheet opens with a CSV file that can be saved or shared. | Not recorded |
 | Review offline/hardware wording | App identifies readings and device as simulated and does not imply hardware access. | Not recorded |
 
