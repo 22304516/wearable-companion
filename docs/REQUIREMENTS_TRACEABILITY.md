@@ -33,7 +33,7 @@ The prompt states these as quality objectives rather than numbered functional re
 | Maintainability | Partial | Simulator, storage validation, CSV formatting, and platform export code are separated into `src/` modules. There is not yet a complete device-source interface for a future BLE implementation. |
 | Performance | Not assessed | History is capped at 200 entries, but no performance measurements have been recorded. |
 | Testing and quality assurance | Partially checked | TypeScript and ESLint checks have been run successfully during development. Manual scenarios in `VALIDATION_CHECKLIST.md` are unrecorded; no hardware tests are possible yet. |
-| Documentation and handover | Initial deliverables drafted | User guide, maintenance guide, risk register, project plan, validation checklist, and this matrix exist. Screenshots, architecture diagram, WBS, stakeholder/communication materials, reflection, presentation, archive, and administrative checklist remain to be prepared or confirmed. |
+| Documentation and handover | Initial deliverables drafted | User guide, maintenance guide, risk register, project plan, validation checklist, matrix, architecture notes, WBS, stakeholder register, and proposed communication plan exist. Screenshots, reflection, presentation, archive, and administrative checklist remain to be prepared or confirmed. |
 
 ## Verification record
 
