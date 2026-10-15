@@ -7,9 +7,9 @@
 | Device management | Simulator controls implemented | Users can pause/resume synthetic sample generation. Real discovery, pairing, and device commands are not implemented. |
 | Sensor readings | Synthetic demo values | Clearly labelled; replace with device adapter only when available. |
 | User preferences | Implemented for dashboard metric visibility | Selected metrics are stored locally; History continues to retain all simulated readings. |
-| Historical storage | Implemented for synthetic demo readings | Timestamped samples are stored locally; maximum 200 entries. Verify persistence on target platforms. |
-| Historical trends | Basic visual trend view implemented for synthetic samples | History shows up to 20 recent samples as range-scaled bars with low/high labels. This is a demo visualisation, not clinical analysis. |
-| Data export | CSV export implemented for synthetic history | Web downloads a CSV; native platforms share a temporary CSV file. Verify on each target platform. |
+| Historical storage | Implemented for synthetic demo readings | Timestamped samples are stored locally; maximum 200 entries. History has rolling 24-hour, 7-day, and all-sample filters with per-metric averages, low/high/latest values, and sample counts. Verify filter boundaries and calculations on target platforms. |
+| Historical trends | Basic filtered trend view implemented for synthetic samples | History shows up to 20 samples from the selected range as range-scaled bars with low/high labels. This is a demo visualisation, not clinical analysis. |
+| Data export | CSV export implemented for selected synthetic history range | Web downloads a CSV; native platforms share a temporary CSV file. Verify range selection and export on each target platform. |
 | Authentication | Not implemented | Confirm expected deployment and security scope before selecting an approach. |
 | NFC | Not implemented | Requires compatible hardware and platform validation. |
 | Alerts/notifications | Not implemented | Prioritize after core workflow. |

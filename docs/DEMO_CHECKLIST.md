@@ -21,8 +21,8 @@
 | 0:30–1:20 | Show Today. | Point out the simulator notice, sample metrics, units, and timestamps. Explain that values refresh about every three seconds while generation is running. |
 | 1:20–2:00 | Open Devices and pause, then resume generation. | Show the control changing simulator activity. Clarify that this does not discover, pair with, or send commands to a physical wearable. |
 | 2:00–2:50 | Open Settings and hide one metric, then return to Today. | Show the selected metric omitted from Today. Explain that this local preference does not remove the metric from saved History. |
-| 2:50–3:50 | Open History and review records and trend bars. | Explain that history is local and bounded, and that charts are range-scaled samples for interface demonstration rather than clinical analysis. |
-| 3:50–4:30 | Export CSV, if it has been verified on the demonstration platform. | Show the download or share flow only if confirmed during rehearsal. Point out the synthetic-data marker in exported rows. |
+| 2:50–3:50 | Open History, switch time ranges, and review a summary and trend bars. | Explain the rolling 24-hour, 7-day, and all-sample filters. Summaries and charts use the selected synthetic sample range; charts are interface demonstrations, not clinical analysis. |
+| 3:50–4:30 | Export CSV, if it has been verified on the demonstration platform. | Show the download or share flow only if confirmed during rehearsal. Point out that export follows the selected time range and contains a synthetic-data marker. |
 | 4:30–5:00 | Summarize limitations and next work. | Mention authentication, real BLE/NFC, alerts, multi-device support, and formal accessibility/platform validation as incomplete where applicable. Refer to the requirements matrix for detail. |
 
 ## Fallbacks
@@ -35,4 +35,3 @@
 ## After rehearsal
 
 Record the date, app commit, browser/device and OS, steps attempted, observed result, and any issues in `VALIDATION_CHECKLIST.md`. Update this document and the requirements matrix if the observed behavior differs from the expected behavior above. Remove or revise any step that is not supported by actual evidence.
-

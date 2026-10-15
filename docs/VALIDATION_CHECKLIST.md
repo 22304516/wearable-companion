@@ -6,15 +6,15 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 
 | Check | Command | Result / date |
 |---|---|---|
-| TypeScript type check | `npx tsc --noEmit` | Not recorded |
-| ESLint | `npm run lint` | Not recorded |
+| TypeScript type check | `npx tsc --noEmit` | Passed, 15 Oct 2026 |
+| ESLint | `npm run lint` | Passed, 15 Oct 2026 |
 | Expo configuration/dependency review | `npx expo-doctor` | Not recorded |
 
 ## Manual scenarios
 
 | Scenario | Expected result | Result / platform / date |
 |---|---|---|
-| Start on web | App opens and shows the simulator notice. | Not recorded |
+| Start on web | App opens and shows the simulator notice. | Passed in the local Expo web preview, Codex in-app browser, 15 Oct 2026; browser/OS version not surfaced. |
 | Start on a mobile target | App opens and shows the same core screens. | Not recorded |
 | Observe Today while running | Synthetic values update approximately every three seconds. | Not recorded |
 | Observe step count during one local day | Synthetic step count does not decrease before the local day rolls over. | Not recorded |
@@ -24,10 +24,23 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 | Reload the app | Saved metric preference and history are restored on the same installation. | Not recorded |
 | Clear History | Existing entries disappear; a later simulator sample may create a new entry. | Not recorded |
 | Restore malformed local data | Invalid entries are ignored without breaking the screen or trend charts. | Not recorded |
-| Review trend bars | Up to 20 samples appear per metric; low/high ranges are labelled. | Not recorded |
+| Review trend bars | Up to 20 samples appear per metric; low/high ranges are labelled. | Web smoke check, 15 Oct 2026: trend cards and low/high labels rendered for available recent samples. Maximum sample count and accessibility were not checked. |
+| Select each History time range | 24-hour, 7-day, and all-sample filters show only matching records; an empty range explains what to do. | Web smoke check, 15 Oct 2026: switched from 24 hours to 7 days and All; range labels and sample counts updated. Only recent samples were present, so older-record exclusion/boundaries were not exercised. |
+| Review range summaries | Average, low, high, latest, and sample count match the selected records for each metric. | Not recorded |
+| Export a selected History range | CSV contains only records in the selected range and retains the synthetic-data marker. | Not recorded |
 | Export history on web | A CSV downloads with timestamp, metric, value, unit, and `is_synthetic=true` columns. | Not recorded |
 | Export history on mobile | The share sheet opens with a CSV file that can be saved or shared. | Not recorded |
 | Review offline/hardware wording | App identifies readings and device as simulated and does not imply hardware access. | Not recorded |
+
+## Development verification record
+
+**Date:** 15 October 2026
+
+**Environment:** Expo web preview at `localhost:8083`, Codex in-app browser; browser/OS version not surfaced. The preview ran from the local working tree before this feature commit.
+
+**Observed:** app loaded; History range controls, summary cards, and trend cards rendered; selecting 7 days and All updated the displayed range label and available sample count. The only saved samples were recent, so the date cutoff logic was not manually verified with older sample data. Expo also reported an unknown error while installing React Native DevTools; the web bundle completed and the app rendered.
+
+**Automated checks:** `npx tsc --noEmit` passed; `npm run lint` passed; `git diff --check` passed. These checks do not verify native platforms or CSV download/share behavior.
 
 ## Evidence to retain
 

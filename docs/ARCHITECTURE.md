@@ -14,6 +14,7 @@ flowchart TD
   User[User]
   UI[Expo React Native UI<br/>Today · History · Devices · Settings]
   Sim[src/simulator.ts<br/>Synthetic readings]
+  History[src/history.ts<br/>Range filters + summaries]
   Store[src/storage.ts<br/>Validate local records]
   Local[(AsyncStorage<br/>History · preferences)]
   CSV[src/csv.ts<br/>CSV formatting]
@@ -23,6 +24,8 @@ flowchart TD
   User --> UI
   UI --> Sim
   Sim --> UI
+  UI --> History
+  History --> UI
   UI --> Store
   UI <--> Local
   UI --> CSV
@@ -37,8 +40,8 @@ flowchart TD
 1. The app loads locally saved preferences and synthetic history.
 2. `src/storage.ts` rejects malformed history entries, removes duplicate IDs, sorts valid entries newest first, and applies the 200-entry cap.
 3. While the simulator is running, `src/simulator.ts` produces synthetic heart rate, step-count, and temperature values. The app adds timestamps and updates Today.
-4. The app stores each sample in AsyncStorage. History displays the stored records and charts the latest 20 samples per metric.
-5. When requested, `src/csv.ts` serializes the local synthetic history. The web adapter downloads a CSV; the native adapter writes a temporary file and opens the platform share sheet.
+4. The app stores each sample in AsyncStorage. History filters the stored records to the selected rolling 24-hour, 7-day, or all-sample range, calculates per-metric summaries, and charts the latest 20 samples per metric within that range.
+5. When requested, `src/csv.ts` serializes the selected local synthetic history range. The web adapter downloads a CSV; the native adapter writes a temporary file and opens the platform share sheet.
 
 ## Key design decisions
 

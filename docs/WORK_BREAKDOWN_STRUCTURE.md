@@ -16,7 +16,7 @@
 | 3.0 | Mobile application prototype | Demonstrable synthetic-data app with clear limitations | Core prototype implemented; verify key workflows manually on target platforms. |
 | 3.1 | Dashboard and navigation | Today, History, Devices, and Settings views; clear synthetic-data notice | Implemented in `App.tsx`. |
 | 3.2 | Simulator and device controls | Timestamped sample metrics; pause/resume sample generation; no false BLE state | Implemented in `src/simulator.ts` and Devices view; no hardware integration. |
-| 3.3 | Local history and visualisation | Persistent bounded records, trends, loading/empty/error handling | Implemented using AsyncStorage; manual persistence and recovery checks remain. |
+| 3.3 | Local history and visualisation | Persistent bounded records, time filters, summaries, trends, loading/empty/error handling | Implemented using AsyncStorage with rolling 24-hour, 7-day, and all-sample ranges and per-metric summaries; manual persistence and calculation checks remain. |
 | 3.4 | Preferences | Persist selected dashboard metrics and restore defaults | Implemented locally; manual persistence check remains. |
 | 3.5 | Data export | CSV export on web and native share workflow; synthetic-data column | Implemented; verify file contents/download and native sharing on each target. |
 | 4.0 | Quality assurance and security | Recorded checks, resolved defects, supported-platform limits, privacy/security decisions | TypeScript and lint checks have passed during development; manual validation is pending. Authentication, backend, and production security are not implemented. |

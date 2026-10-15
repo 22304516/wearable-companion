@@ -12,6 +12,7 @@ import { makeSyntheticReadings, Reading } from './src/simulator';
 import { HistoryEntry, sanitizeHistory, sanitizeVisibleMetrics } from './src/storage';
 import { makeCsvFileName, toSyntheticCsv } from './src/csv';
 import { exportCsv } from './src/exportCsv';
+import { filterHistoryByRange, HistoryRange, summarizeMetric } from './src/history';
 
 const HISTORY_KEY = 'wearable-companion.synthetic-history.v1';
 const PREFERENCES_KEY = 'wearable-companion.visible-metrics.v1';
@@ -166,6 +167,57 @@ function TrendCard({
   );
 }
 
+function HistoryRangeButton({
+  label,
+  selected,
+  onPress,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      onPress={onPress}
+      style={[styles.rangeButton, selected && styles.rangeButtonSelected]}
+    >
+      <Text style={[styles.rangeButtonText, selected && styles.rangeButtonTextSelected]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+function SummaryCard({
+  label,
+  unit,
+  entries,
+}: {
+  label: string;
+  unit: string;
+  entries: HistoryEntry[];
+}) {
+  const summary = summarizeMetric(entries, label);
+  if (!summary) return null;
+
+  const average = Number.isInteger(summary.average)
+    ? summary.average
+    : summary.average.toFixed(1);
+
+  return (
+    <View style={styles.summaryCard}>
+      <Text style={styles.summaryTitle}>{label}</Text>
+      <View style={styles.summaryGrid}>
+        <Text style={styles.summaryItem}>Average  {average} {unit}</Text>
+        <Text style={styles.summaryItem}>Low  {summary.minimum} {unit}</Text>
+        <Text style={styles.summaryItem}>High  {summary.maximum} {unit}</Text>
+        <Text style={styles.summaryItem}>Latest  {summary.latest} {unit}</Text>
+      </View>
+      <Text style={styles.summaryCount}>{summary.count} synthetic samples in this range</Text>
+    </View>
+  );
+}
+
 export default function App() {
   const [readings, setReadings] = useState(makeSyntheticReadings());
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -178,9 +230,11 @@ export default function App() {
   const [preferencesError, setPreferencesError] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState('');
+  const [historyRange, setHistoryRange] = useState<HistoryRange>('24h');
   const historyRef = useRef<HistoryEntry[]>([]);
   const preferencesRef = useRef<string[]>(AVAILABLE_METRICS);
   const preferenceWriteRef = useRef<Promise<void>>(Promise.resolve());
+  const visibleHistory = filterHistoryByRange(history, historyRange);
 
   useEffect(() => {
     let active = true;
@@ -299,17 +353,22 @@ export default function App() {
   }
 
   async function exportHistory() {
-    if (history.length === 0 || exporting) return;
+    if (visibleHistory.length === 0 || exporting) return;
     setExporting(true);
     setExportMessage('');
     try {
-      await exportCsv(toSyntheticCsv(history), makeCsvFileName());
-      setExportMessage('CSV export is ready. The file contains synthetic sample readings.');
+      await exportCsv(toSyntheticCsv(visibleHistory), makeCsvFileName());
+      setExportMessage(`CSV export is ready with ${visibleHistory.length} synthetic samples from this range.`);
     } catch {
       setExportMessage('The CSV export could not be created. Please try again.');
     } finally {
       setExporting(false);
     }
+  }
+
+  function selectHistoryRange(range: HistoryRange) {
+    setHistoryRange(range);
+    setExportMessage('');
   }
 
   return (
@@ -374,11 +433,11 @@ export default function App() {
               <View style={styles.historyActions}>
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Export synthetic reading history as CSV"
-                  accessibilityState={{ disabled: history.length === 0 || exporting }}
-                  disabled={history.length === 0 || exporting}
+                  accessibilityLabel="Export synthetic reading history for the selected time range as CSV"
+                  accessibilityState={{ disabled: visibleHistory.length === 0 || exporting }}
+                  disabled={visibleHistory.length === 0 || exporting}
                   onPress={() => void exportHistory()}
-                  style={[styles.clearButton, (history.length === 0 || exporting) && styles.actionDisabled]}
+                  style={[styles.clearButton, (visibleHistory.length === 0 || exporting) && styles.actionDisabled]}
                 >
                   <Text style={styles.clearButtonText}>{exporting ? 'Exporting…' : 'Export CSV'}</Text>
                 </Pressable>
@@ -395,29 +454,46 @@ export default function App() {
             {exportMessage.length > 0 && (
               <Text style={styles.exportMessage} accessibilityRole="alert">{exportMessage}</Text>
             )}
+            <View style={styles.rangeSelector} accessibilityRole="radiogroup" accessibilityLabel="History time range">
+              <HistoryRangeButton label="24 hours" selected={historyRange === '24h'} onPress={() => selectHistoryRange('24h')} />
+              <HistoryRangeButton label="7 days" selected={historyRange === '7d'} onPress={() => selectHistoryRange('7d')} />
+              <HistoryRangeButton label="All" selected={historyRange === 'all'} onPress={() => selectHistoryRange('all')} />
+            </View>
             {!historyLoaded ? (
               <Text style={styles.emptyText}>Loading saved history…</Text>
-            ) : history.length === 0 ? (
-              <Text style={styles.emptyText}>No saved readings yet. New samples will appear here.</Text>
+            ) : visibleHistory.length === 0 ? (
+              <Text style={styles.emptyText}>No saved readings in this range. Choose a wider range or wait for new samples.</Text>
             ) : (
               <>
-                <Text style={styles.trendsHeading}>Recent trends</Text>
+                <Text style={styles.trendsHeading}>Range summary</Text>
                 <Text style={styles.trendsCaption}>
-                  Latest {Math.min(history.length, 20)} samples · each chart scales to its own range
+                  {historyRange === 'all' ? 'All saved samples' : `Samples from the last ${historyRange === '24h' ? '24 hours' : '7 days'}`} · synthetic demonstration data
                 </Text>
+                {readings.map(reading => (
+                  <SummaryCard
+                    key={reading.label}
+                    label={reading.label}
+                    unit={reading.unit}
+                    entries={visibleHistory}
+                  />
+                ))}
+                <Text style={styles.trendsHeading}>Recent trends</Text>
+                <Text style={styles.trendsCaption}>Latest {Math.min(visibleHistory.length, 20)} samples in this range · each chart scales to its own range</Text>
                 {readings.map(reading => (
                   <TrendCard
                     key={reading.label}
                     label={reading.label}
                     unit={reading.unit}
-                    entries={history}
+                    entries={visibleHistory}
                   />
                 ))}
                 <Text style={styles.trendsHeading}>Saved readings</Text>
-                {history.map(entry => <HistoryCard key={entry.id} entry={entry} />)}
+                {visibleHistory.map(entry => <HistoryCard key={entry.id} entry={entry} />)}
               </>
             )}
-            <Text style={styles.footer}>Up to {MAX_HISTORY_ITEMS} samples are kept on this device.</Text>
+            <Text style={styles.footer}>
+              Up to {MAX_HISTORY_ITEMS} samples are kept on this device; at a 3-second capture interval that is about 10 minutes of continuous history.
+            </Text>
           </>
         ) : screen === 'devices' ? (
           <>
@@ -538,6 +614,11 @@ const styles = StyleSheet.create({
   historyHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 11 },
   historyHeadingCopy: { flex: 1 },
   historyActions: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  rangeSelector: { flexDirection: 'row', gap: 8, marginBottom: 14 },
+  rangeButton: { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: '#e8ebf3' },
+  rangeButtonSelected: { backgroundColor: '#5263a7' },
+  rangeButtonText: { color: '#495577', fontSize: 13, fontWeight: '600' },
+  rangeButtonTextSelected: { color: 'white' },
   historyCaption: { color: '#69748c', fontSize: 13, marginTop: -5 },
   clearButton: { paddingHorizontal: 10, paddingVertical: 9, borderRadius: 10, backgroundColor: '#e6e9f2' },
   clearButtonText: { color: '#303f80', fontSize: 13, fontWeight: '700' },
@@ -550,6 +631,11 @@ const styles = StyleSheet.create({
   historyValue: { color: '#17213b', fontSize: 14, fontWeight: '600' },
   trendsHeading: { color: '#17213b', fontSize: 17, fontWeight: '700', marginTop: 8, marginBottom: 5 },
   trendsCaption: { color: '#69748c', fontSize: 13, lineHeight: 19, marginBottom: 11 },
+  summaryCard: { backgroundColor: 'white', borderRadius: 14, padding: 16, marginBottom: 10 },
+  summaryTitle: { color: '#17213b', fontSize: 15, fontWeight: '700', marginBottom: 10 },
+  summaryGrid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 8 },
+  summaryItem: { width: '50%', color: '#495577', fontSize: 13 },
+  summaryCount: { color: '#818ba0', fontSize: 12, marginTop: 10 },
   trendCard: { backgroundColor: 'white', borderRadius: 14, padding: 16, marginBottom: 10 },
   trendHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   trendTitle: { color: '#69748c', fontSize: 14, fontWeight: '600' },
