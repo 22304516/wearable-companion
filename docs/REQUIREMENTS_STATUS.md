@@ -17,3 +17,5 @@
 | Testing | Not yet verified | Run and record checks on web and a mobile target; do not claim results in advance. |
 
 This table is a baseline. Update it as implementation changes.
+
+For the detailed FR-01–FR-13 mapping and cross-cutting quality objectives, see [REQUIREMENTS_TRACEABILITY.md](./REQUIREMENTS_TRACEABILITY.md). “Implemented” describes source code and is not, by itself, a claim of platform verification.

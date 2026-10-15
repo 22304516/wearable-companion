@@ -19,4 +19,4 @@ Scan the QR code with Expo Go, or use the terminal shortcuts for a simulator. No
 - Not implemented: accounts/authentication, real BLE/NFC, alerts, backend, production security, and a full accessibility audit.
 - No physical wearable is available. Device status and readings must remain clearly identified as simulated.
 
-See `docs/USER_GUIDE.md` for app workflows, `docs/SYSTEM_MAINTENANCE.md` for technical handover, and `docs/VALIDATION_CHECKLIST.md` for checks to perform and record. The project plan, risk register, and requirements status are also in `docs/`. Keep results based on actual work and evidence; do not record planned checks as completed.
+See `docs/USER_GUIDE.md` for app workflows, `docs/SYSTEM_MAINTENANCE.md` for technical handover, `docs/VALIDATION_CHECKLIST.md` for checks to perform and record, and `docs/REQUIREMENTS_TRACEABILITY.md` for requirement coverage and gaps. The project plan, risk register, and requirements status are also in `docs/`. Keep results based on actual work and evidence; do not record planned checks as completed.
