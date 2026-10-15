@@ -8,6 +8,7 @@
 - [ ] Use a clean browser profile or test installation if practical; avoid entering personal or health data.
 - [ ] Install dependencies and launch the app using the setup steps in `USER_GUIDE.md`.
 - [ ] Confirm the app loads and the synthetic-data notice is visible.
+- [ ] If demonstrating account flow, configure a dedicated development Supabase project and verify its email settings first; otherwise state that this local run is unauthenticated demo mode.
 - [ ] Check that Today, History, Devices, and Settings screens open.
 - [ ] Ensure the simulator is running and sample history is available; if not, allow it to generate samples.
 - [ ] Check browser downloads and local storage availability before showing CSV export or persistence.
@@ -21,9 +22,10 @@
 | 0:30–1:20 | Show Today. | Point out the simulator notice, sample metrics, units, and timestamps. Explain that values refresh about every three seconds while generation is running. |
 | 1:20–2:00 | Open Devices, select each simulator profile, then pause and resume generation. | Show the selected profile changing the synthetic data source. Clarify that profiles are not discovered devices and controls do not connect to or command physical wearables. |
 | 2:00–2:50 | Open Settings, choose Fahrenheit, and hide one metric, then return to Today. | Show the temperature unit change and the selected metric omitted from Today. Explain that these local preferences do not remove readings from saved History. |
-| 2:50–3:50 | Open History, switch time ranges, and review a summary and trend bars. | Explain the rolling 24-hour, 7-day, and all-sample filters. Summaries and charts use the selected synthetic sample range; charts are interface demonstrations, not clinical analysis. |
-| 3:50–4:30 | Export CSV, if it has been verified on the demonstration platform. | Show the download or share flow only if confirmed during rehearsal. Point out that export follows the selected time range and contains a synthetic-data marker. |
-| 4:30–5:00 | Summarize limitations and next work. | Mention authentication, real BLE/NFC, alerts, multi-device support, and formal accessibility/platform validation as incomplete where applicable. Refer to the requirements matrix for detail. |
+| 2:50–3:10 | In Settings, enable the demo heart-rate alert and lower its threshold below the current synthetic value. | Show the in-app alert and its non-medical disclaimer. It does not send system notifications. |
+| 3:10–4:00 | Open History, switch time ranges, and review a summary and trend bars. | Explain the rolling 24-hour, 7-day, and all-sample filters. Summaries and charts use the selected synthetic sample range; charts are interface demonstrations, not clinical analysis. |
+| 4:00–4:30 | Export CSV, if it has been verified on the demonstration platform. | Show the download or share flow only if confirmed during rehearsal. Point out that export follows the selected time range and contains a synthetic-data marker. |
+| 4:30–5:00 | Summarize limitations and next work. | Mention unconfigured authentication, real BLE/NFC, system notifications, cloud data, and formal accessibility/platform validation as incomplete where applicable. Refer to the requirements matrix for detail. |
 
 ## Fallbacks
 

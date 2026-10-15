@@ -19,11 +19,11 @@
 | 3.3 | Local history and visualisation | Persistent bounded records, time filters, summaries, trends, loading/empty/error handling | Implemented using AsyncStorage with rolling 24-hour, 7-day, and all-sample ranges and per-metric summaries; manual persistence and calculation checks remain. |
 | 3.4 | Preferences | Persist selected dashboard metrics, simulator profile, and temperature units | Web smoke checks confirmed profile and temperature-unit persistence; unit display conversion was visible on Today and History. Native platforms and CSV unit export remain unverified. |
 | 3.5 | Data export | CSV export on web and native share workflow; synthetic-data column | Implemented; verify file contents/download and native sharing on each target. |
-| 4.0 | Quality assurance and security | Recorded checks, resolved defects, supported-platform limits, privacy/security decisions | TypeScript and lint checks have passed during development; manual validation is pending. Authentication, backend, and production security are not implemented. |
+| 4.0 | Quality assurance and security | Recorded checks, resolved defects, supported-platform limits, privacy/security decisions | TypeScript and lint checks have passed during development; manual validation is pending. Supabase Auth and synthetic demo alerts are implemented in part; external provider setup and production security remain incomplete. |
 | 4.1 | Automated/static checks | Type check, lint, dependency/config review recorded with commit and date | TypeScript and lint passed; Expo Doctor passed 21/21 checks with no issues on 15 Oct 2026. No full test suite is recorded. |
 | 4.2 | Manual workflow verification | Complete `VALIDATION_CHECKLIST.md` with actual platform/version/results | Limited web smoke checks recorded for history filters and simulator source selection; most workflows and all mobile targets remain unverified. |
 | 4.3 | Accessibility and usability review | Check contrast, keyboard/touch use, screen-reader labels, text scaling, and responsive layout | Not recorded yet. |
-| 4.4 | Authentication/security scope | Real authentication decision, authorization, per-user data design, privacy review | Required by FR-01 in the source prompt; implementation deferred pending backend/provider decision. No real user data should be entered. |
+| 4.4 | Authentication/security scope | Real authentication decision, authorization, per-user data design, privacy review | Supabase email/password flow and local account-key namespaces are implemented. Configure a real project and verify account flows; cloud data, RLS, secure session storage, and privacy review remain incomplete. Do not enter real user data. |
 | 4.5 | Hardware feasibility | BLE/NFC compatibility investigation and, if possible, physical-device test record | No hardware is available; simulator is the current fallback. |
 | 5.0 | Technical and user documentation | User guide, maintenance notes, architecture, known limitations, validation evidence | Initial guides and architecture are drafted; update from verified results. |
 | 5.1 | User guide | Setup, screens, workflows, troubleshooting, screenshots | Written in `USER_GUIDE.md`; screenshots are still to be captured and reviewed. |
@@ -41,6 +41,7 @@ Treat an output as complete only when its artifact exists, it matches the curren
 
 ## Next priority
 
-1. Run the manual validation checklist on web and at least one available mobile target; record what was actually tested.
-2. Confirm whether FR-01 authentication is required for the assessment and select an appropriate backend/authentication approach before implementation.
-3. Capture reviewed screenshots, then prepare the demo checklist and remaining submission/administrative deliverables.
+1. Connect an owner-created Supabase development project and verify sign-up, email confirmation, sign-in, restored session, sign-out, and account data separation.
+2. Review secure session storage and RLS before considering any real account or health data; add and verify system notifications only on a supported mobile target if assessment scope requires them.
+3. Run the manual validation checklist on web and at least one available mobile target; record actual device/browser and app commit.
+4. Capture reviewed screenshots, then prepare the presentation, source archive, and administrative checklist from actual assessment instructions and declarations.

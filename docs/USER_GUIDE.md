@@ -31,7 +31,11 @@ Devices lets you choose one of two synthetic profiles, a fitness band or a smart
 
 ### Settings
 
-Use the checkboxes to choose which metrics appear on Today. **Show all readings** restores the default selection. Choose **Celsius (°C)** or **Fahrenheit (°F)** for skin temperature; stored samples remain in Celsius and are converted for display and export. Preferences are stored locally and do not require an account. History continues to include every metric, including metrics hidden from Today.
+Use the checkboxes to choose which metrics appear on Today. **Show all readings** restores the default selection. Choose **Celsius (°C)** or **Fahrenheit (°F)** for skin temperature; stored samples remain in Celsius and are converted for display and export. Preferences are stored locally. History continues to include every metric, including metrics hidden from Today.
+
+The **Demo alerts** section can enable an in-app synthetic heart-rate threshold. Use the minus and plus buttons to adjust the threshold; when the current synthetic reading reaches it, Today shows a red alert card, which disappears when the reading drops below it. This is a demonstration of threshold behavior only. It is not a medical or emergency alert and does not send operating-system notifications.
+
+If Supabase is configured, Settings shows the signed-in email and a **Sign out** button. New users can create an account from the sign-in screen. The local app records are stored under a key scoped to that account ID; they are not uploaded. Without Supabase settings, the app opens in demo mode. See [AUTH_SETUP.md](./AUTH_SETUP.md) before configuring a project.
 
 ## Troubleshooting
 
@@ -42,4 +46,4 @@ Use the checkboxes to choose which metrics appear on Today. **Show all readings*
 
 ## Limitations
 
-All displayed sensor values are synthetic. There is no account, cloud backup, real device integration, notification service, or production-grade health-data handling. Do not use the readings to make health or safety decisions.
+All displayed sensor values are synthetic. There is no configured account provider, cloud backup, real device integration, operating-system notification service, or production-grade health-data handling. Do not use the readings or demo threshold alerts to make health or safety decisions.

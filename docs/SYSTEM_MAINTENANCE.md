@@ -2,7 +2,7 @@
 
 ## System summary
 
-Wearable Companion is a single-screen React Native application built with Expo SDK 57 and TypeScript. Expo supports the current prototype on web and mobile. There is no backend, authentication service, wearable protocol implementation, or cloud data store.
+Wearable Companion is a React Native application built with Expo SDK 57 and TypeScript. Expo supports the current prototype on web and mobile. The app has optional Supabase email/password authentication when configured, but no remote app-data store or wearable protocol implementation.
 
 ## Source layout
 
@@ -60,7 +60,7 @@ Use `npx expo install <package>` for Expo-compatible native dependencies. Rechec
 
 ## Security and future hardware work
 
-Authentication, authorization, secure remote storage, BLE, NFC, and real device management are not implemented. Do not add a client-side password check as a substitute for authentication. Before handling real user or health information, define the threat model, data-retention policy, authentication architecture, consent requirements, and applicable university/project requirements. Real BLE/NFC work requires supported hardware and platform testing; simulator behavior is not evidence of hardware connectivity.
+Provider-backed account registration/sign-in is implemented but remains unconfigured and unverified. The current demo heart-rate alert is an in-app threshold only; no system notification channel or device-event alert is implemented. Authorization for remote data, secure session storage, remote records, BLE, NFC, and real device management are not implemented. Do not add a client-side password check as a substitute for authentication. Before handling real user or health information, define the threat model, data-retention policy, secure session design, RLS policies, consent requirements, and applicable university/project requirements. Real BLE/NFC work requires supported hardware and platform testing; simulator behavior is not evidence of hardware connectivity.
 
 ## Release and handover
 

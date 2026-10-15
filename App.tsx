@@ -17,11 +17,14 @@ import { TemperatureUnit, toDisplayReading } from './src/units';
 import { AuthScreen } from './src/AuthScreen';
 import { isSupabaseConfigured, supabase } from './src/authClient';
 import type { Session } from '@supabase/supabase-js';
+import { DEFAULT_ALERT_SETTINGS, getTriggeredDemoAlerts, sanitizeAlertSettings } from './src/alerts';
+import type { AlertSettings } from './src/alerts';
 
 const HISTORY_KEY = 'synthetic-history.v1';
 const PREFERENCES_KEY = 'visible-metrics.v1';
 const SELECTED_DEVICE_KEY = 'selected-simulator.v1';
 const TEMPERATURE_UNIT_KEY = 'temperature-unit.v1';
+const ALERT_SETTINGS_KEY = 'alert-settings.v1';
 const DEFAULT_DEVICE = SIMULATED_DEVICES[0];
 const MAX_HISTORY_ITEMS = 200;
 const REFRESH_INTERVAL_MS = 3000;
@@ -287,10 +290,12 @@ function WearableApp({
   const preferencesKey = storageKey(PREFERENCES_KEY);
   const selectedDeviceKey = storageKey(SELECTED_DEVICE_KEY);
   const temperatureUnitKey = storageKey(TEMPERATURE_UNIT_KEY);
+  const alertSettingsKey = storageKey(ALERT_SETTINGS_KEY);
   const [readings, setReadings] = useState(makeSyntheticReadings(Date.now(), DEFAULT_DEVICE.id));
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>(DEFAULT_DEVICE.id);
   const [temperatureUnit, setTemperatureUnit] = useState<TemperatureUnit>('C');
+  const [alertSettings, setAlertSettings] = useState<AlertSettings>(DEFAULT_ALERT_SETTINGS);
   const [screen, setScreen] = useState<'today' | 'history' | 'devices' | 'settings'>('today');
   const [simulatorRunning, setSimulatorRunning] = useState(true);
   const [visibleMetrics, setVisibleMetrics] = useState(AVAILABLE_METRICS);
@@ -307,6 +312,7 @@ function WearableApp({
   const selectedDevice = SIMULATED_DEVICES.find(device => device.id === selectedDeviceId) ?? DEFAULT_DEVICE;
   const selectedDeviceHistory = history.filter(entry => (entry.deviceId ?? DEFAULT_DEVICE.id) === selectedDeviceId);
   const visibleHistory = filterHistoryByRange(selectedDeviceHistory, historyRange);
+  const triggeredAlerts = getTriggeredDemoAlerts(readings, alertSettings);
 
   useEffect(() => {
     let active = true;
@@ -332,6 +338,11 @@ function WearableApp({
         if (active && (savedTemperatureUnit === 'C' || savedTemperatureUnit === 'F')) {
           setTemperatureUnit(savedTemperatureUnit);
         }
+        const savedAlertSettings = await AsyncStorage.getItem(alertSettingsKey);
+        if (active && savedAlertSettings) {
+          const restoredAlerts = sanitizeAlertSettings(JSON.parse(savedAlertSettings));
+          if (restoredAlerts) setAlertSettings(restoredAlerts);
+        }
       } catch {
         if (active) setPreferencesError(true);
       } finally {
@@ -343,7 +354,7 @@ function WearableApp({
     return () => {
       active = false;
     };
-  }, [preferencesKey, selectedDeviceKey, temperatureUnitKey]);
+  }, [alertSettingsKey, preferencesKey, selectedDeviceKey, temperatureUnitKey]);
 
   useEffect(() => {
     let active = true;
@@ -434,6 +445,16 @@ function WearableApp({
     saveVisibleMetrics([...AVAILABLE_METRICS]);
   }
 
+  function updateAlertSettings(next: AlertSettings) {
+    const sanitized = sanitizeAlertSettings(next) ?? DEFAULT_ALERT_SETTINGS;
+    setAlertSettings(sanitized);
+    void AsyncStorage.setItem(alertSettingsKey, JSON.stringify(sanitized)).then(() => {
+      setPreferencesError(false);
+    }).catch(() => {
+      setPreferencesError(true);
+    });
+  }
+
   async function selectSimulator(device: SimulatedDevice) {
     setSelectedDeviceId(device.id);
     setReadings(makeSyntheticReadings(Date.now(), device.id));
@@ -496,6 +517,14 @@ function WearableApp({
             These are synthetic sample readings. No wearable is connected and no health data is being collected.
           </Text>
         </View>
+
+        {triggeredAlerts.map(alert => (
+          <View key={alert} style={styles.alertNotice} accessibilityRole="alert">
+            <Text style={styles.alertNoticeTitle}>Demo threshold reached</Text>
+            <Text style={styles.alertNoticeText}>{alert}</Text>
+            <Text style={styles.alertDisclaimer}>Synthetic data only · not a medical or emergency alert</Text>
+          </View>
+        ))}
 
         {storageError && (
           <View style={styles.errorNotice} accessibilityRole="alert">
@@ -680,6 +709,47 @@ function WearableApp({
             <Text style={styles.settingsIntro}>
               Choose which synthetic readings appear on the Today dashboard. All readings continue to be saved in History while the simulator is running.
             </Text>
+            <Text style={styles.section}>Demo alerts</Text>
+            <Text style={styles.settingsIntro}>
+              Configure an in-app heart-rate threshold for synthetic readings. This does not send system notifications or provide medical advice.
+            </Text>
+            <Pressable
+              accessibilityRole="switch"
+              accessibilityLabel="Enable synthetic heart-rate threshold alert"
+              accessibilityState={{ checked: alertSettings.heartRateEnabled }}
+              onPress={() => updateAlertSettings({ ...alertSettings, heartRateEnabled: !alertSettings.heartRateEnabled })}
+              style={styles.alertToggle}
+            >
+              <Text style={styles.preferenceLabel}>Heart-rate threshold alert</Text>
+              <Text style={styles.preferenceState}>{alertSettings.heartRateEnabled ? 'On' : 'Off'}</Text>
+            </Pressable>
+            <View style={styles.alertThreshold}>
+              <View style={styles.alertThresholdCopy}>
+                <Text style={styles.preferenceLabel}>Alert at or above</Text>
+                <Text style={styles.deviceStatus}>Synthetic beats per minute</Text>
+              </View>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Lower demo heart-rate threshold by 5 beats per minute"
+                accessibilityState={{ disabled: alertSettings.heartRateAbove <= 50 }}
+                disabled={alertSettings.heartRateAbove <= 50}
+                onPress={() => updateAlertSettings({ ...alertSettings, heartRateAbove: alertSettings.heartRateAbove - 5 })}
+                style={[styles.thresholdButton, alertSettings.heartRateAbove <= 50 && styles.actionDisabled]}
+              >
+                <Text style={styles.thresholdButtonText}>−</Text>
+              </Pressable>
+              <Text style={styles.thresholdValue}>{alertSettings.heartRateAbove} bpm</Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Raise demo heart-rate threshold by 5 beats per minute"
+                accessibilityState={{ disabled: alertSettings.heartRateAbove >= 220 }}
+                disabled={alertSettings.heartRateAbove >= 220}
+                onPress={() => updateAlertSettings({ ...alertSettings, heartRateAbove: alertSettings.heartRateAbove + 5 })}
+                style={[styles.thresholdButton, alertSettings.heartRateAbove >= 220 && styles.actionDisabled]}
+              >
+                <Text style={styles.thresholdButtonText}>+</Text>
+              </Pressable>
+            </View>
             {!preferencesLoaded ? (
               <Text style={styles.emptyText}>Loading saved preferences…</Text>
             ) : (
@@ -730,6 +800,16 @@ const styles = StyleSheet.create({
   demoNoticeText: { color: '#72540d', lineHeight: 19 },
   accountCard: { backgroundColor: 'white', borderRadius: 14, padding: 16, marginBottom: 14 },
   signOutButton: { alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 10, backgroundColor: '#e6e9f2', marginTop: 12 },
+  alertNotice: { backgroundColor: '#fff0ef', borderColor: '#efc4c0', borderWidth: 1, borderRadius: 13, padding: 14, marginBottom: 14 },
+  alertNoticeTitle: { color: '#87352d', fontWeight: '700', marginBottom: 5 },
+  alertNoticeText: { color: '#87352d', lineHeight: 20 },
+  alertDisclaimer: { color: '#87352d', fontSize: 12, marginTop: 7 },
+  alertToggle: { minHeight: 56, backgroundColor: 'white', borderRadius: 13, paddingHorizontal: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 9 },
+  alertThreshold: { minHeight: 68, backgroundColor: 'white', borderRadius: 13, padding: 13, flexDirection: 'row', alignItems: 'center', marginBottom: 18 },
+  alertThresholdCopy: { flex: 1 },
+  thresholdButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: '#e6e9f2' },
+  thresholdButtonText: { color: '#303f80', fontSize: 22, fontWeight: '700' },
+  thresholdValue: { minWidth: 72, color: '#17213b', fontWeight: '700', textAlign: 'center' },
   container: { padding: 22, paddingTop: 30, maxWidth: 720, width: '100%', alignSelf: 'center' },
   eyebrow: { color: '#5263a7', fontSize: 12, fontWeight: '700', letterSpacing: 1.1 },
   title: { color: '#17213b', fontSize: 30, fontWeight: '700', marginTop: 8 },
