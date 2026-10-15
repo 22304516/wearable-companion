@@ -30,6 +30,19 @@ const MAX_HISTORY_ITEMS = 200;
 const REFRESH_INTERVAL_MS = 3000;
 const AVAILABLE_METRICS = ['Heart rate', 'Steps today', 'Skin temperature'];
 
+type RadioKeyDownEvent = { nativeEvent: { key: string }; preventDefault: () => void };
+
+function radioKeyboardProps(onPress: () => void): { onKeyDown: (event: RadioKeyDownEvent) => void } {
+  return {
+    onKeyDown: event => {
+      if (event.nativeEvent.key === ' ' || event.nativeEvent.key === 'Spacebar') {
+        event.preventDefault();
+        onPress();
+      }
+    },
+  };
+}
+
 function makeHistoryEntry(readings: Reading[], device: SimulatedDevice): HistoryEntry {
   const recordedAt = new Date().toISOString();
   return {
@@ -207,6 +220,8 @@ function HistoryRangeButton({
     <Pressable
       accessibilityRole="radio"
       accessibilityState={{ selected }}
+      aria-checked={selected}
+      {...radioKeyboardProps(onPress)}
       onPress={onPress}
       style={[styles.rangeButton, selected && styles.rangeButtonSelected]}
     >
@@ -229,6 +244,8 @@ function TemperatureUnitButton({
     <Pressable
       accessibilityRole="radio"
       accessibilityState={{ selected }}
+      aria-checked={selected}
+      {...radioKeyboardProps(onPress)}
       onPress={onPress}
       style={[styles.rangeButton, selected && styles.rangeButtonSelected]}
     >
@@ -653,6 +670,8 @@ function WearableApp({
                     accessibilityRole="radio"
                     accessibilityLabel={`Select ${device.name} simulated data source`}
                     accessibilityState={{ selected }}
+                    aria-checked={selected}
+                    {...radioKeyboardProps(() => { void selectSimulator(device); })}
                     onPress={() => void selectSimulator(device)}
                     style={[styles.simulatorOption, selected && styles.simulatorOptionSelected]}
                   >

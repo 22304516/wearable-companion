@@ -1,6 +1,6 @@
 # Validation checklist
 
-This is a set of checks to perform and record. It is not a results report. Fill in the date, platform, app version, and outcome only after performing each check.
+This document combines planned checks with a results log. Record dates, platforms, and outcomes only after performing each check; unrecorded scenarios remain unverified.
 
 ## Automated checks
 
@@ -33,6 +33,7 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 | Restore malformed local data | Invalid entries are ignored without breaking the screen or trend charts. | Not recorded |
 | Review trend bars | Up to 20 samples appear per metric; low/high ranges are labelled. | Web smoke check, 15 Oct 2026: trend cards and low/high labels rendered for available recent samples. Maximum sample count and accessibility were not checked. |
 | Select each History time range | 24-hour, 7-day, and all-sample filters show only matching records; an empty range explains what to do. | Web smoke check, 15 Oct 2026: switched from 24 hours to 7 days and All; range labels and sample counts updated. Only recent samples were present, so older-record exclusion/boundaries were not exercised. |
+| Keyboard access to radio choices | Each group exposes its selected option and Space changes the focused choice. | Passed in isolated local web preview, 15 Oct 2026: browser DOM showed one `aria-checked=true` option per group; Space selected 7 days, the smartwatch simulator, and Fahrenheit. Native VoiceOver/TalkBack behavior remains unverified. |
 | Review range summaries | Average, low, high, latest, and sample count match the selected records for each metric. | Not recorded |
 | Export a selected History range | CSV contains only records in the selected profile/range and includes device ID/name/type plus the synthetic-data marker. | Not recorded |
 | Export in Fahrenheit mode | CSV skin-temperature values use °F; stored readings and other metric values remain unchanged. | Not recorded |
@@ -53,6 +54,8 @@ This is a set of checks to perform and record. It is not a results report. Fill 
 **Follow-up, 15 October 2026:** Added optional Supabase authentication and synthetic heart-rate threshold controls. The app bundle loaded in a local Expo web preview at `localhost:8084`; the unauthenticated state visibly identified itself as demo mode. With the 80 bpm threshold enabled, selecting the synthetic smartwatch produced an accessible in-app alert at 83 bpm. The configured authentication flow and native behavior were not tested because no Supabase project credentials or mobile target were available. The preview server was stopped after checking. A follow-up Expo Doctor run after adding test dependencies passed 21/21 checks; the new Jest suite passed 10 unit tests.
 
 **Authentication form check, 15 October 2026:** A temporary local web preview used only placeholder Supabase URL/key values. Invalid email and short password inputs displayed their validation messages. No valid credential or auth request was sent. The placeholder configuration was not saved in the repository; the preview was stopped.
+
+**Accessibility follow-up, 15 October 2026:** Web review found that radio controls changed visually but did not expose their selected state in the DOM. History range, simulator profile, and temperature unit controls now provide `aria-checked` alongside React Native selected state and respond to Space. Verified the selected state and keyboard operation in an isolated local Expo web preview. This is a targeted web accessibility check, not a full WCAG, native screen-reader, contrast, or text-scaling audit.
 
 **Presentation draft, 15 October 2026:** Prepared a 10-slide Scrum Master presentation from the current repository and recorded evidence. The PPTX passed structural package integrity, 10-slide count, slide geometry, heading/bullet geometry, and Arial font-policy checks with no findings. The montage and slide 7 were visually inspected; automated layout validation reported no findings. The slides have not been individually reviewed in native PowerPoint. No supplied template was available; team and sprint numbers remain marked not recorded. Rehearsal, assessor-format confirmation, and review in native PowerPoint remain pending. The draft is delivered in the task `outputs` folder and is not committed to this repository.
 
