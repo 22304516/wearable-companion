@@ -23,7 +23,7 @@ Today displays the selected sample metrics and selected simulator profile. Synth
 
 ### History
 
-History stores up to 200 timestamped sample entries on the current device/browser. Each new entry records its simulator profile. Because the simulator records every three seconds, the cap holds about 10 minutes of continuous samples; the wider filters can only show older records if they remain among those saved entries. Use **24 hours**, **7 days**, or **All** to filter records from the currently selected profile by a rolling time window. The range summary shows count, average, low, high, and latest value for each metric in the selected range. Entries are listed newest first. Recent trends show up to 20 samples per metric as range-scaled bars; each metric has its own scale, so charts are for interface demonstration and should not be compared across metrics. **Export CSV** exports entries from the selected profile and time range with timestamps, device ID/name/type, metric labels, values, units, and an `is_synthetic` column. Web downloads the CSV; mobile opens the system share sheet. **Clear** removes all saved entries from every profile, regardless of the selected range. If the simulator is still running, a new entry will be recorded at the next sample interval.
+History stores up to 200 timestamped sample entries on the current device/browser. Each new entry records its simulator profile. Because the simulator records every three seconds, the cap holds about 10 minutes of continuous samples; the wider filters can only show older records if they remain among those saved entries. Use **24 hours**, **7 days**, or **All** to filter records from the currently selected profile by a rolling time window. The range summary shows count, average, low, high, and latest value for each metric in the selected range. Entries are listed newest first. Temperature follows the unit selected in Settings. Recent trends show up to 20 samples per metric as range-scaled bars; each metric has its own scale, so charts are for interface demonstration and should not be compared across metrics. **Export CSV** exports entries from the selected profile and time range with timestamps, device ID/name/type, metric labels, values, units, and an `is_synthetic` column; temperature uses the selected display unit. Web downloads the CSV; mobile opens the system share sheet. **Clear** removes all saved entries from every profile, regardless of the selected range. If the simulator is still running, a new entry will be recorded at the next sample interval.
 
 ### Devices
 
@@ -31,7 +31,7 @@ Devices lets you choose one of two synthetic profiles, a fitness band or a smart
 
 ### Settings
 
-Use the checkboxes to choose which metrics appear on Today. **Show all readings** restores the default selection. Preferences are stored locally and do not require an account. History continues to include every metric, including metrics hidden from Today.
+Use the checkboxes to choose which metrics appear on Today. **Show all readings** restores the default selection. Choose **Celsius (°C)** or **Fahrenheit (°F)** for skin temperature; stored samples remain in Celsius and are converted for display and export. Preferences are stored locally and do not require an account. History continues to include every metric, including metrics hidden from Today.
 
 ## Troubleshooting
 

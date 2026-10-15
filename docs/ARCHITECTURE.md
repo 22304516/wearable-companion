@@ -15,6 +15,7 @@ flowchart TD
   UI[Expo React Native UI<br/>Today · History · Devices · Settings]
   Sim[src/simulator.ts<br/>Two synthetic profiles]
   History[src/history.ts<br/>Range filters + summaries]
+  Units[src/units.ts<br/>Display conversion]
   Store[src/storage.ts<br/>Validate local records]
   Local[(AsyncStorage<br/>History · preferences)]
   CSV[src/csv.ts<br/>CSV formatting]
@@ -26,6 +27,8 @@ flowchart TD
   Sim --> UI
   UI --> History
   History --> UI
+  UI --> Units
+  Units --> UI
   UI --> Store
   UI <--> Local
   UI --> CSV
@@ -33,7 +36,7 @@ flowchart TD
   CSV --> Native
 ```
 
-`App.tsx` owns the current screen state and coordinates the simulator, storage, history, and export modules. The selected simulator profile refreshes readings every three seconds while running. Each new history record stores the selected profile ID, name, and type. The interface labels both profiles as synthetic. History, selected profile, and display preferences are stored on the current device/browser; there is no server synchronization.
+`App.tsx` owns the current screen state and coordinates the simulator, storage, history, unit conversion, and export modules. Samples are stored in Celsius; `src/units.ts` converts the display and export value when Fahrenheit is selected. The selected simulator profile refreshes readings every three seconds while running. Each new history record stores the selected profile ID, name, and type. The interface labels both profiles as synthetic. History, selected profile, temperature unit, and display preferences are stored on the current device/browser; there is no server synchronization.
 
 ## Data flow
 

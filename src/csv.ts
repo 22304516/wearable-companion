@@ -1,4 +1,5 @@
 import type { HistoryEntry } from './storage';
+import { TemperatureUnit, toDisplayReading } from './units';
 
 function escapeCell(value: string | number): string {
   let text = String(value);
@@ -7,10 +8,11 @@ function escapeCell(value: string | number): string {
   return `"${text.replace(/"/g, '""')}"`;
 }
 
-export function toSyntheticCsv(entries: HistoryEntry[]): string {
+export function toSyntheticCsv(entries: HistoryEntry[], temperatureUnit: TemperatureUnit = 'C'): string {
   const rows = [['recorded_at', 'device_id', 'device_name', 'device_type', 'metric', 'value', 'unit', 'is_synthetic']];
   for (const entry of entries) {
-    for (const reading of entry.readings) {
+    for (const storedReading of entry.readings) {
+      const reading = toDisplayReading(storedReading, temperatureUnit);
       rows.push([
         entry.recordedAt,
         entry.deviceId ?? 'legacy-demo-wearable',

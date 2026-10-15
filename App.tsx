@@ -13,10 +13,12 @@ import { HistoryEntry, sanitizeHistory, sanitizeVisibleMetrics } from './src/sto
 import { makeCsvFileName, toSyntheticCsv } from './src/csv';
 import { exportCsv } from './src/exportCsv';
 import { filterHistoryByRange, HistoryRange, summarizeMetric } from './src/history';
+import { TemperatureUnit, toDisplayReading } from './src/units';
 
 const HISTORY_KEY = 'wearable-companion.synthetic-history.v1';
 const PREFERENCES_KEY = 'wearable-companion.visible-metrics.v1';
 const SELECTED_DEVICE_KEY = 'wearable-companion.selected-simulator.v1';
+const TEMPERATURE_UNIT_KEY = 'wearable-companion.temperature-unit.v1';
 const DEFAULT_DEVICE = SIMULATED_DEVICES[0];
 const MAX_HISTORY_ITEMS = 200;
 const REFRESH_INTERVAL_MS = 3000;
@@ -34,12 +36,13 @@ function makeHistoryEntry(readings: Reading[], device: SimulatedDevice): History
   };
 }
 
-function Metric({ reading }: { reading: Reading }) {
+function Metric({ reading, temperatureUnit }: { reading: Reading; temperatureUnit: TemperatureUnit }) {
+  const displayReading = toDisplayReading(reading, temperatureUnit);
   return (
     <View style={styles.metric}>
-      <Text style={styles.metricLabel}>{reading.label}</Text>
+      <Text style={styles.metricLabel}>{displayReading.label}</Text>
       <Text style={styles.metricValue}>
-        {reading.value} <Text style={styles.unit}>{reading.unit}</Text>
+        {displayReading.value} <Text style={styles.unit}>{displayReading.unit}</Text>
       </Text>
     </View>
   );
@@ -91,7 +94,7 @@ function PreferenceRow({
   );
 }
 
-function HistoryCard({ entry }: { entry: HistoryEntry }) {
+function HistoryCard({ entry, temperatureUnit }: { entry: HistoryEntry; temperatureUnit: TemperatureUnit }) {
   const date = new Date(entry.recordedAt);
   const timeLabel = Number.isNaN(date.getTime())
     ? 'Unknown time'
@@ -101,14 +104,17 @@ function HistoryCard({ entry }: { entry: HistoryEntry }) {
     <View style={styles.historyCard}>
       <Text style={styles.historyTime}>{timeLabel}</Text>
       <Text style={styles.historySource}>{entry.deviceName ?? 'Legacy demo wearable'} · simulated source</Text>
-      {entry.readings.map(reading => (
-        <View key={reading.label} style={styles.historyMetric}>
-          <Text style={styles.historyLabel}>{reading.label}</Text>
-          <Text style={styles.historyValue}>
-            {reading.value} {reading.unit}
-          </Text>
-        </View>
-      ))}
+      {entry.readings.map(storedReading => {
+        const reading = toDisplayReading(storedReading, temperatureUnit);
+        return (
+          <View key={reading.label} style={styles.historyMetric}>
+            <Text style={styles.historyLabel}>{reading.label}</Text>
+            <Text style={styles.historyValue}>
+              {reading.value} {reading.unit}
+            </Text>
+          </View>
+        );
+      })}
     </View>
   );
 }
@@ -117,17 +123,21 @@ function TrendCard({
   label,
   unit,
   entries,
+  temperatureUnit,
 }: {
   label: string;
   unit: string;
   entries: HistoryEntry[];
+  temperatureUnit: TemperatureUnit;
 }) {
   const points = entries
     .slice(0, 20)
     .reverse()
     .flatMap(entry => {
       const reading = entry.readings.find(item => item.label === label);
-      return reading ? [{ value: reading.value, recordedAt: entry.recordedAt }] : [];
+      return reading
+        ? [{ value: toDisplayReading(reading, temperatureUnit).value, recordedAt: entry.recordedAt }]
+        : [];
     });
 
   if (points.length === 0) return null;
@@ -144,13 +154,14 @@ function TrendCard({
     hour: '2-digit',
     minute: '2-digit',
   });
-  const accessibilitySummary = `${label}. ${points.length} recent synthetic samples. Low ${minimum} ${unit}, high ${maximum} ${unit}, latest ${latest} ${unit}.`;
+  const displayUnit = toDisplayReading({ label, value: 0, unit }, temperatureUnit).unit;
+  const accessibilitySummary = `${label}. ${points.length} recent synthetic samples. Low ${minimum} ${displayUnit}, high ${maximum} ${displayUnit}, latest ${latest} ${displayUnit}.`;
 
   return (
     <View style={styles.trendCard}>
       <View style={styles.trendHeader}>
         <Text style={styles.trendTitle}>{label}</Text>
-        <Text style={styles.trendLatest}>{latest} {unit}</Text>
+        <Text style={styles.trendLatest}>{latest} {displayUnit}</Text>
       </View>
       <View accessible accessibilityRole="image" accessibilityLabel={accessibilitySummary} style={styles.chart}>
         {points.map((point, index) => {
@@ -170,7 +181,7 @@ function TrendCard({
         })}
       </View>
       <View style={styles.trendFooter}>
-        <Text style={styles.trendRange}>Low {minimum} · High {maximum} {unit}</Text>
+        <Text style={styles.trendRange}>Low {minimum} · High {maximum} {displayUnit}</Text>
         <Text style={styles.trendTime}>{firstTime}–{lastTime}</Text>
       </View>
     </View>
@@ -198,30 +209,57 @@ function HistoryRangeButton({
   );
 }
 
+function TemperatureUnitButton({
+  unit,
+  selected,
+  onPress,
+}: {
+  unit: TemperatureUnit;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  const label = unit === 'C' ? 'Celsius (°C)' : 'Fahrenheit (°F)';
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      onPress={onPress}
+      style={[styles.rangeButton, selected && styles.rangeButtonSelected]}
+    >
+      <Text style={[styles.rangeButtonText, selected && styles.rangeButtonTextSelected]}>{label}</Text>
+    </Pressable>
+  );
+}
+
 function SummaryCard({
   label,
   unit,
   entries,
+  temperatureUnit,
 }: {
   label: string;
   unit: string;
   entries: HistoryEntry[];
+  temperatureUnit: TemperatureUnit;
 }) {
   const summary = summarizeMetric(entries, label);
   if (!summary) return null;
 
-  const average = Number.isInteger(summary.average)
-    ? summary.average
-    : summary.average.toFixed(1);
+  const displayUnit = toDisplayReading({ label, value: 0, unit }, temperatureUnit).unit;
+  const averageValue = toDisplayReading({ label, value: summary.average, unit }, temperatureUnit).value;
+  const minimum = toDisplayReading({ label, value: summary.minimum, unit }, temperatureUnit).value;
+  const maximum = toDisplayReading({ label, value: summary.maximum, unit }, temperatureUnit).value;
+  const latest = toDisplayReading({ label, value: summary.latest, unit }, temperatureUnit).value;
+  const average = Number.isInteger(averageValue) ? averageValue : averageValue.toFixed(1);
 
   return (
     <View style={styles.summaryCard}>
       <Text style={styles.summaryTitle}>{label}</Text>
       <View style={styles.summaryGrid}>
-        <Text style={styles.summaryItem}>Average  {average} {unit}</Text>
-        <Text style={styles.summaryItem}>Low  {summary.minimum} {unit}</Text>
-        <Text style={styles.summaryItem}>High  {summary.maximum} {unit}</Text>
-        <Text style={styles.summaryItem}>Latest  {summary.latest} {unit}</Text>
+        <Text style={styles.summaryItem}>Average  {average} {displayUnit}</Text>
+        <Text style={styles.summaryItem}>Low  {minimum} {displayUnit}</Text>
+        <Text style={styles.summaryItem}>High  {maximum} {displayUnit}</Text>
+        <Text style={styles.summaryItem}>Latest  {latest} {displayUnit}</Text>
       </View>
       <Text style={styles.summaryCount}>{summary.count} synthetic samples in this range</Text>
     </View>
@@ -232,6 +270,7 @@ export default function App() {
   const [readings, setReadings] = useState(makeSyntheticReadings(Date.now(), DEFAULT_DEVICE.id));
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>(DEFAULT_DEVICE.id);
+  const [temperatureUnit, setTemperatureUnit] = useState<TemperatureUnit>('C');
   const [screen, setScreen] = useState<'today' | 'history' | 'devices' | 'settings'>('today');
   const [simulatorRunning, setSimulatorRunning] = useState(true);
   const [visibleMetrics, setVisibleMetrics] = useState(AVAILABLE_METRICS);
@@ -268,6 +307,10 @@ export default function App() {
         if (active && restoredDevice) {
           setSelectedDeviceId(restoredDevice.id);
           setReadings(makeSyntheticReadings(Date.now(), restoredDevice.id));
+        }
+        const savedTemperatureUnit = await AsyncStorage.getItem(TEMPERATURE_UNIT_KEY);
+        if (active && (savedTemperatureUnit === 'C' || savedTemperatureUnit === 'F')) {
+          setTemperatureUnit(savedTemperatureUnit);
         }
       } catch {
         if (active) setPreferencesError(true);
@@ -382,12 +425,22 @@ export default function App() {
     }
   }
 
+  async function selectTemperatureUnit(unit: TemperatureUnit) {
+    setTemperatureUnit(unit);
+    try {
+      await AsyncStorage.setItem(TEMPERATURE_UNIT_KEY, unit);
+      setPreferencesError(false);
+    } catch {
+      setPreferencesError(true);
+    }
+  }
+
   async function exportHistory() {
     if (visibleHistory.length === 0 || exporting) return;
     setExporting(true);
     setExportMessage('');
     try {
-      await exportCsv(toSyntheticCsv(visibleHistory), makeCsvFileName());
+      await exportCsv(toSyntheticCsv(visibleHistory, temperatureUnit), makeCsvFileName());
       setExportMessage(`CSV export is ready with ${visibleHistory.length} synthetic samples from this range.`);
     } catch {
       setExportMessage('The CSV export could not be created. Please try again.');
@@ -441,7 +494,7 @@ export default function App() {
           <>
             <Text style={styles.section}>Today</Text>
             {readings.filter(item => visibleMetrics.includes(item.label)).map(item => (
-              <Metric key={item.label} reading={item} />
+              <Metric key={item.label} reading={item} temperatureUnit={temperatureUnit} />
             ))}
             {visibleMetrics.length === 0 && (
               <Text style={styles.emptyText}>No metrics are selected. Choose readings to show in Settings.</Text>
@@ -505,6 +558,7 @@ export default function App() {
                     label={reading.label}
                     unit={reading.unit}
                     entries={visibleHistory}
+                    temperatureUnit={temperatureUnit}
                   />
                 ))}
                 <Text style={styles.trendsHeading}>Recent trends</Text>
@@ -515,10 +569,13 @@ export default function App() {
                     label={reading.label}
                     unit={reading.unit}
                     entries={visibleHistory}
+                    temperatureUnit={temperatureUnit}
                   />
                 ))}
                 <Text style={styles.trendsHeading}>Saved readings</Text>
-                {visibleHistory.map(entry => <HistoryCard key={entry.id} entry={entry} />)}
+                {visibleHistory.map(entry => (
+                  <HistoryCard key={entry.id} entry={entry} temperatureUnit={temperatureUnit} />
+                ))}
               </>
             )}
             <Text style={styles.footer}>
@@ -587,6 +644,11 @@ export default function App() {
               <Text style={styles.emptyText}>Loading saved preferences…</Text>
             ) : (
               <>
+                <Text style={styles.section}>Temperature unit</Text>
+                <View style={styles.rangeSelector} accessibilityRole="radiogroup" accessibilityLabel="Temperature unit">
+                  <TemperatureUnitButton unit="C" selected={temperatureUnit === 'C'} onPress={() => void selectTemperatureUnit('C')} />
+                  <TemperatureUnitButton unit="F" selected={temperatureUnit === 'F'} onPress={() => void selectTemperatureUnit('F')} />
+                </View>
                 <View style={styles.preferenceList}>
                   {AVAILABLE_METRICS.map(metric => (
                     <PreferenceRow

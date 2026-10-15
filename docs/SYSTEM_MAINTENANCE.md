@@ -12,6 +12,7 @@ Wearable Companion is a single-screen React Native application built with Expo S
 | `src/simulator.ts` | Produces synthetic demo metrics for two selectable profiles. It does not access Bluetooth or hardware. |
 | `src/storage.ts` | Validates and normalizes locally restored history and metric preferences; history entries may include simulator source identity. |
 | `src/history.ts` | Filters persisted synthetic records by rolling time range and calculates per-metric summaries. |
+| `src/units.ts` | Converts canonical Celsius samples for display/export when Fahrenheit is selected. |
 | `src/csv.ts` | Formats the saved synthetic history as CSV and creates export filenames. |
 | `src/exportCsv.ts` / `src/exportCsv.web.ts` | Platform-specific native share and browser download implementations. |
 | `docs/ARCHITECTURE.md` | Component diagram, data flow, decisions, and known architecture gaps. |
@@ -27,8 +28,9 @@ The app uses AsyncStorage, which is persistent but unencrypted key-value storage
 | `wearable-companion.synthetic-history.v1` | Up to 200 timestamped entries; each entry contains synthetic metrics and, for new samples, profile ID/name/type. At three-second sampling, this retains about ten minutes of continuous history. |
 | `wearable-companion.visible-metrics.v1` | Labels selected for display on the Today dashboard. |
 | `wearable-companion.selected-simulator.v1` | Selected synthetic profile ID. |
+| `wearable-companion.temperature-unit.v1` | Temperature display choice (`C` or `F`); stored sample values remain in Celsius. |
 
-History and preferences are local to the app/browser installation. They are not synchronized, backed up, encrypted, or associated with an account. Do not store real health data in this prototype. To clear history, use **History → Clear**. To restore the default metric selection, use **Settings → Show all readings**. Clearing app/browser storage removes all three keys.
+History and preferences are local to the app/browser installation. They are not synchronized, backed up, encrypted, or associated with an account. Do not store real health data in this prototype. To clear history, use **History → Clear**. To restore the default metric selection, use **Settings → Show all readings**. Clearing app/browser storage removes all four keys.
 
 ## Development setup and maintenance commands
 
