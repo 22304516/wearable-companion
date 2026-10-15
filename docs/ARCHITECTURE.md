@@ -89,6 +89,7 @@ flowchart TD
 ## Known architecture gaps
 
 - Authentication is implemented but no Supabase project is configured. There is no backend API/table for app readings or preferences, no RLS policy, and no cloud synchronization.
+- NFC is not implemented. A possible future NDEF tag-assisted identification workflow is documented in `NFC_FEASIBILITY.md`; actual tag/hardware support is unknown.
 - No BLE/NFC adapter, device discovery, physical-device selection, or simultaneous multiple-device connection. The two simulator profiles are not hardware support.
 - The simulator is separated from the screen code as a module, but there is not yet a general device-source interface.
 - AsyncStorage is not suitable for confidential health records.

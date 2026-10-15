@@ -5,6 +5,7 @@
 | Mobile dashboard | Starter implemented | Review on target phone/simulator and record results. |
 | Wearable connection | Simulated only | No hardware available; real BLE remains unverified. |
 | Device management | Two selectable simulator profiles implemented | Users can select a synthetic fitness-band or smartwatch profile and pause/resume sample generation. History and exports label the source. No physical discovery, pairing, or device commands are implemented. |
+| NFC feasibility | Investigated; implementation deferred | NFC could support NDEF-based tap identification for a compatible wearable/tag, but no device/tag or mobile test target exists. See [NFC_FEASIBILITY.md](./NFC_FEASIBILITY.md). NFC is not a continuous sensor link. |
 | Sensor readings | Synthetic demo values | Clearly labelled; replace with device adapter only when available. |
 | User preferences | Implemented for dashboard metric visibility, simulator profile, and temperature unit | Web smoke checks confirmed Fahrenheit display on Today/History and persistence after reload. Native platforms and CSV unit export remain unverified. |
 | Alerts | Partial: configurable synthetic heart-rate in-app threshold | Settings can enable and adjust a demo threshold; Today shows an alert when a sample reaches it. No system notifications, device-event alerts, or medical interpretation. Manual behavior remains unverified. |

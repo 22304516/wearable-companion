@@ -23,5 +23,6 @@ The app includes Supabase email/password registration and sign-in. To enable it,
 - Implemented partially: Supabase email/password account flow, gated app access when configured, and account-namespaced local records. No provider project is configured yet.
 - Not implemented: real BLE/NFC, system notifications or device-event alerts, cloud data storage, production security, and a full accessibility audit.
 - No physical wearable is available. Device status and readings must remain clearly identified as simulated.
+- NFC feasibility is documented in `docs/NFC_FEASIBILITY.md`; no tag reader or real NFC workflow is implemented.
 
 See `docs/USER_GUIDE.md` for app workflows, `docs/DEMO_CHECKLIST.md` for the proposed demonstration flow, `docs/SYSTEM_MAINTENANCE.md` for technical handover, `docs/ARCHITECTURE.md` for architecture and decisions, `docs/VALIDATION_CHECKLIST.md` for checks to perform and record, `docs/REQUIREMENTS_TRACEABILITY.md` for requirement coverage and gaps, `docs/WORK_BREAKDOWN_STRUCTURE.md` for remaining deliverables, and `docs/STAKEHOLDER_REGISTER.md` plus `docs/COMMUNICATION_PLAN.md` for proposed project engagement. The project plan, risk register, and requirements status are also in `docs/`. Keep results based on actual work and evidence; do not record planned checks as completed.
