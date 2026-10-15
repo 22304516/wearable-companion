@@ -13,6 +13,7 @@ Wearable Companion is a single-screen React Native application built with Expo S
 | `src/storage.ts` | Validates and normalizes locally restored history and metric preferences. |
 | `src/csv.ts` | Formats the saved synthetic history as CSV and creates export filenames. |
 | `src/exportCsv.ts` / `src/exportCsv.web.ts` | Platform-specific native share and browser download implementations. |
+| `docs/ARCHITECTURE.md` | Component diagram, data flow, decisions, and known architecture gaps. |
 | `docs/` | Project plan, requirements status, risk register, user guide, maintenance guide, and validation checklist. |
 | `package.json` | Expo scripts and runtime/development dependencies. |
 
