@@ -15,8 +15,8 @@ Scan the QR code with Expo Go, or use the terminal shortcuts for a simulator. No
 
 ## Current status
 
-- Implemented in this starter: a single-screen mobile dashboard, simulated device label, synthetic sample metrics, and periodic demo refresh.
-- Not implemented: accounts/authentication, persistent history, real BLE/NFC, alerts, exports, backend, production security, and accessibility audit.
+- Implemented: a dashboard and history view for synthetic readings. Samples refresh every three seconds and up to 200 timestamped entries are stored locally on the device. The history can be cleared from the History view.
+- Not implemented: accounts/authentication, real BLE/NFC, alerts, exports, backend, production security, trend analysis, and a full accessibility audit.
 - No physical wearable is available. Device status and readings must remain clearly identified as simulated.
 
 See `docs/` for the initial backlog, schedule, risk register, and requirements status. Update these from actual work and evidence; do not record planned activities as completed.
