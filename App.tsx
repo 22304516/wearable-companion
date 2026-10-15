@@ -11,8 +11,10 @@ import {
 import { makeSyntheticReadings, Reading } from './src/simulator';
 
 const HISTORY_KEY = 'wearable-companion.synthetic-history.v1';
+const PREFERENCES_KEY = 'wearable-companion.visible-metrics.v1';
 const MAX_HISTORY_ITEMS = 200;
 const REFRESH_INTERVAL_MS = 3000;
+const AVAILABLE_METRICS = ['Heart rate', 'Steps today', 'Skin temperature'];
 
 type HistoryEntry = {
   id: string;
@@ -53,6 +55,31 @@ function NavigationButton({
       style={[styles.navButton, selected && styles.navButtonSelected]}
     >
       <Text style={[styles.navText, selected && styles.navTextSelected]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+function PreferenceRow({
+  label,
+  selected,
+  onPress,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: selected }}
+      onPress={onPress}
+      style={styles.preferenceRow}
+    >
+      <View style={[styles.checkbox, selected && styles.checkboxSelected]}>
+        {selected && <Text style={styles.checkmark}>✓</Text>}
+      </View>
+      <Text style={styles.preferenceLabel}>{label}</Text>
+      <Text style={styles.preferenceState}>{selected ? 'Shown' : 'Hidden'}</Text>
     </Pressable>
   );
 }
@@ -145,11 +172,43 @@ function TrendCard({
 export default function App() {
   const [readings, setReadings] = useState(makeSyntheticReadings());
   const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [screen, setScreen] = useState<'today' | 'history' | 'devices'>('today');
+  const [screen, setScreen] = useState<'today' | 'history' | 'devices' | 'settings'>('today');
   const [simulatorRunning, setSimulatorRunning] = useState(true);
+  const [visibleMetrics, setVisibleMetrics] = useState(AVAILABLE_METRICS);
   const [historyLoaded, setHistoryLoaded] = useState(false);
+  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const [storageError, setStorageError] = useState(false);
+  const [preferencesError, setPreferencesError] = useState(false);
   const historyRef = useRef<HistoryEntry[]>([]);
+  const preferencesRef = useRef<string[]>(AVAILABLE_METRICS);
+  const preferenceWriteRef = useRef<Promise<void>>(Promise.resolve());
+
+  useEffect(() => {
+    let active = true;
+
+    async function restorePreferences() {
+      try {
+        const saved = await AsyncStorage.getItem(PREFERENCES_KEY);
+        if (saved) {
+          const parsed: unknown = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            const restored = AVAILABLE_METRICS.filter(metric => parsed.includes(metric));
+            preferencesRef.current = restored;
+            if (active) setVisibleMetrics(restored);
+          }
+        }
+      } catch {
+        if (active) setPreferencesError(true);
+      } finally {
+        if (active) setPreferencesLoaded(true);
+      }
+    }
+
+    void restorePreferences();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -226,6 +285,27 @@ export default function App() {
     }
   }
 
+  function saveVisibleMetrics(next: string[]) {
+    preferencesRef.current = next;
+    setVisibleMetrics(next);
+    preferenceWriteRef.current = preferenceWriteRef.current
+      .catch(() => undefined)
+      .then(() => AsyncStorage.setItem(PREFERENCES_KEY, JSON.stringify(next)))
+      .then(() => setPreferencesError(false))
+      .catch(() => setPreferencesError(true));
+  }
+
+  function toggleMetric(metric: string) {
+    const next = preferencesRef.current.includes(metric)
+      ? preferencesRef.current.filter(item => item !== metric)
+      : AVAILABLE_METRICS.filter(item => preferencesRef.current.includes(item) || item === metric);
+    saveVisibleMetrics(next);
+  }
+
+  function resetMetricPreferences() {
+    saveVisibleMetrics([...AVAILABLE_METRICS]);
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -249,17 +329,28 @@ export default function App() {
             </Text>
           </View>
         )}
+        {preferencesError && (
+          <View style={styles.errorNotice} accessibilityRole="alert">
+            <Text style={styles.errorText}>Display preferences could not be saved on this device.</Text>
+          </View>
+        )}
 
         <View style={styles.navigation} accessibilityRole="tablist">
           <NavigationButton label="Today" selected={screen === 'today'} onPress={() => setScreen('today')} />
           <NavigationButton label="History" selected={screen === 'history'} onPress={() => setScreen('history')} />
           <NavigationButton label="Devices" selected={screen === 'devices'} onPress={() => setScreen('devices')} />
+          <NavigationButton label="Settings" selected={screen === 'settings'} onPress={() => setScreen('settings')} />
         </View>
 
         {screen === 'today' ? (
           <>
             <Text style={styles.section}>Today</Text>
-            {readings.map(item => <Metric key={item.label} reading={item} />)}
+            {readings.filter(item => visibleMetrics.includes(item.label)).map(item => (
+              <Metric key={item.label} reading={item} />
+            ))}
+            {visibleMetrics.length === 0 && (
+              <Text style={styles.emptyText}>No metrics are selected. Choose readings to show in Settings.</Text>
+            )}
             <Text style={styles.section}>Device</Text>
             <View style={styles.device}>
               <Text style={styles.deviceName}>Demo wearable</Text>
@@ -307,7 +398,7 @@ export default function App() {
             )}
             <Text style={styles.footer}>Up to {MAX_HISTORY_ITEMS} samples are kept on this device.</Text>
           </>
-        ) : (
+        ) : screen === 'devices' ? (
           <>
             <Text style={styles.section}>Device simulator</Text>
             <View style={styles.deviceCard}>
@@ -336,6 +427,42 @@ export default function App() {
               </Text>
             </View>
             <Text style={styles.footer}>Sample history remains saved when generation is paused.</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.section}>Display preferences</Text>
+            <Text style={styles.settingsIntro}>
+              Choose which synthetic readings appear on the Today dashboard. All readings continue to be saved in History while the simulator is running.
+            </Text>
+            {!preferencesLoaded ? (
+              <Text style={styles.emptyText}>Loading saved preferences…</Text>
+            ) : (
+              <>
+                <View style={styles.preferenceList}>
+                  {AVAILABLE_METRICS.map(metric => (
+                    <PreferenceRow
+                      key={metric}
+                      label={metric}
+                      selected={visibleMetrics.includes(metric)}
+                      onPress={() => toggleMetric(metric)}
+                    />
+                  ))}
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={resetMetricPreferences}
+                  style={styles.resetButton}
+                >
+                  <Text style={styles.resetButtonText}>Show all readings</Text>
+                </Pressable>
+              </>
+            )}
+            <View style={styles.deviceNote}>
+              <Text style={styles.deviceNoteTitle}>Saved on this device</Text>
+              <Text style={styles.deviceNoteText}>
+                These display preferences are stored locally and do not require an account.
+              </Text>
+            </View>
           </>
         )}
       </ScrollView>
@@ -377,6 +504,16 @@ const styles = StyleSheet.create({
   deviceNote: { backgroundColor: '#eef1fa', borderRadius: 13, padding: 15, marginTop: 14 },
   deviceNoteTitle: { color: '#303f80', fontSize: 14, fontWeight: '700', marginBottom: 5 },
   deviceNoteText: { color: '#495577', fontSize: 13, lineHeight: 19 },
+  settingsIntro: { color: '#69748c', fontSize: 14, lineHeight: 21, marginBottom: 14 },
+  preferenceList: { backgroundColor: 'white', borderRadius: 14, paddingHorizontal: 15 },
+  preferenceRow: { minHeight: 58, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#edf0f5' },
+  checkbox: { width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: '#a7afc2', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  checkboxSelected: { borderColor: '#5263a7', backgroundColor: '#5263a7' },
+  checkmark: { color: 'white', fontSize: 15, fontWeight: '700', lineHeight: 18 },
+  preferenceLabel: { flex: 1, color: '#17213b', fontSize: 14, fontWeight: '600' },
+  preferenceState: { color: '#69748c', fontSize: 12 },
+  resetButton: { alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 10, backgroundColor: '#e6e9f2', marginTop: 13 },
+  resetButtonText: { color: '#303f80', fontSize: 13, fontWeight: '700' },
   historyHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 11 },
   historyHeadingCopy: { flex: 1 },
   historyCaption: { color: '#69748c', fontSize: 13, marginTop: -5 },
