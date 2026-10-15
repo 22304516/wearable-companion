@@ -4,6 +4,9 @@ export type HistoryEntry = {
   id: string;
   recordedAt: string;
   readings: Reading[];
+  deviceId?: string;
+  deviceName?: string;
+  deviceType?: string;
 };
 
 function isReading(value: unknown): value is Reading {
@@ -22,7 +25,10 @@ function isHistoryEntry(value: unknown): value is HistoryEntry {
   return (
     typeof candidate.id === 'string' && candidate.id.length > 0 &&
     typeof candidate.recordedAt === 'string' && Number.isFinite(Date.parse(candidate.recordedAt)) &&
-    Array.isArray(candidate.readings) && candidate.readings.length > 0 && candidate.readings.every(isReading)
+    Array.isArray(candidate.readings) && candidate.readings.length > 0 && candidate.readings.every(isReading) &&
+    (candidate.deviceId === undefined || (typeof candidate.deviceId === 'string' && candidate.deviceId.length > 0)) &&
+    (candidate.deviceName === undefined || (typeof candidate.deviceName === 'string' && candidate.deviceName.length > 0)) &&
+    (candidate.deviceType === undefined || (typeof candidate.deviceType === 'string' && candidate.deviceType.length > 0))
   );
 }
 

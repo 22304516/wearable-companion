@@ -4,7 +4,7 @@
 |---|---|---|
 | Mobile dashboard | Starter implemented | Review on target phone/simulator and record results. |
 | Wearable connection | Simulated only | No hardware available; real BLE remains unverified. |
-| Device management | Simulator controls implemented | Users can pause/resume synthetic sample generation. Real discovery, pairing, and device commands are not implemented. |
+| Device management | Two selectable simulator profiles implemented | Users can select a synthetic fitness-band or smartwatch profile and pause/resume sample generation. History and exports label the source. No physical discovery, pairing, or device commands are implemented. |
 | Sensor readings | Synthetic demo values | Clearly labelled; replace with device adapter only when available. |
 | User preferences | Implemented for dashboard metric visibility | Selected metrics are stored locally; History continues to retain all simulated readings. |
 | Historical storage | Implemented for synthetic demo readings | Timestamped samples are stored locally; maximum 200 entries. History has rolling 24-hour, 7-day, and all-sample filters with per-metric averages, low/high/latest values, and sample counts. Verify filter boundaries and calculations on target platforms. |
@@ -14,7 +14,7 @@
 | NFC | Not implemented | Requires compatible hardware and platform validation. |
 | Alerts/notifications | Not implemented | Prioritize after core workflow. |
 | User/maintenance/project documentation | Initial guides drafted | User guide, maintenance guide, and validation checklist describe the current prototype; add screenshots and actual validation evidence during review. |
-| Testing | Not yet verified | Run and record checks on web and a mobile target; do not claim results in advance. |
+| Testing | Static checks and limited web smoke check recorded | TypeScript, lint, and Expo Doctor pass; web History screen rendered and filter controls were operated. Mobile target is unavailable in the current environment; broader workflows and date-cutoff boundaries remain unverified. |
 
 This table is a baseline. Update it as implementation changes.
 

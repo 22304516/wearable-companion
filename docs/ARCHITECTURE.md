@@ -13,7 +13,7 @@ Wearable Companion is a single-developer capstone prototype. There is no reusabl
 flowchart TD
   User[User]
   UI[Expo React Native UI<br/>Today · History · Devices · Settings]
-  Sim[src/simulator.ts<br/>Synthetic readings]
+  Sim[src/simulator.ts<br/>Two synthetic profiles]
   History[src/history.ts<br/>Range filters + summaries]
   Store[src/storage.ts<br/>Validate local records]
   Local[(AsyncStorage<br/>History · preferences)]
@@ -33,15 +33,15 @@ flowchart TD
   CSV --> Native
 ```
 
-`App.tsx` owns the current screen state and coordinates the simulator, storage, and export modules. The simulator refreshes readings every three seconds while running. The interface labels those values as synthetic. History and display preferences are stored on the current device/browser; there is no server synchronization.
+`App.tsx` owns the current screen state and coordinates the simulator, storage, history, and export modules. The selected simulator profile refreshes readings every three seconds while running. Each new history record stores the selected profile ID, name, and type. The interface labels both profiles as synthetic. History, selected profile, and display preferences are stored on the current device/browser; there is no server synchronization.
 
 ## Data flow
 
 1. The app loads locally saved preferences and synthetic history.
 2. `src/storage.ts` rejects malformed history entries, removes duplicate IDs, sorts valid entries newest first, and applies the 200-entry cap.
-3. While the simulator is running, `src/simulator.ts` produces synthetic heart rate, step-count, and temperature values. The app adds timestamps and updates Today.
-4. The app stores each sample in AsyncStorage. History filters the stored records to the selected rolling 24-hour, 7-day, or all-sample range, calculates per-metric summaries, and charts the latest 20 samples per metric within that range.
-5. When requested, `src/csv.ts` serializes the selected local synthetic history range. The web adapter downloads a CSV; the native adapter writes a temporary file and opens the platform share sheet.
+3. While the simulator is running, `src/simulator.ts` produces synthetic heart rate, step-count, and temperature values for the selected fitness-band or smartwatch profile. The app adds timestamps and source identity, then updates Today.
+4. The app stores each sample in AsyncStorage. History first filters records to the selected simulator profile, then to the selected rolling 24-hour, 7-day, or all-sample range, calculates per-metric summaries, and charts the latest 20 samples per metric within that range.
+5. When requested, `src/csv.ts` serializes the selected local synthetic history range including source identity. The web adapter downloads a CSV; the native adapter writes a temporary file and opens the platform share sheet.
 
 ## Key design decisions
 
@@ -77,7 +77,7 @@ flowchart TD
 ## Known architecture gaps
 
 - No authentication, backend API, database service, or user-data separation.
-- No BLE/NFC adapter, device discovery, or multiple-device registry.
+- No BLE/NFC adapter, device discovery, physical-device selection, or simultaneous multiple-device connection. The two simulator profiles are not hardware support.
 - The simulator is separated from the screen code as a module, but there is not yet a general device-source interface.
 - AsyncStorage is not suitable for confidential health records.
 - Android/iOS, native CSV sharing, and hardware integrations must be verified on their actual targets before claiming support.

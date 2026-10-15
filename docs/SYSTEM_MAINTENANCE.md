@@ -9,8 +9,8 @@ Wearable Companion is a single-screen React Native application built with Expo S
 | Path | Responsibility |
 |---|---|
 | `App.tsx` | Dashboard, Today/History/Devices/Settings views, simulator timer, preference controls, and local persistence. |
-| `src/simulator.ts` | Produces synthetic demo metrics. It does not access Bluetooth or hardware. |
-| `src/storage.ts` | Validates and normalizes locally restored history and metric preferences. |
+| `src/simulator.ts` | Produces synthetic demo metrics for two selectable profiles. It does not access Bluetooth or hardware. |
+| `src/storage.ts` | Validates and normalizes locally restored history and metric preferences; history entries may include simulator source identity. |
 | `src/history.ts` | Filters persisted synthetic records by rolling time range and calculates per-metric summaries. |
 | `src/csv.ts` | Formats the saved synthetic history as CSV and creates export filenames. |
 | `src/exportCsv.ts` / `src/exportCsv.web.ts` | Platform-specific native share and browser download implementations. |
@@ -24,10 +24,11 @@ The app uses AsyncStorage, which is persistent but unencrypted key-value storage
 
 | Key | Contents |
 |---|---|
-| `wearable-companion.synthetic-history.v1` | Up to 200 timestamped entries; each entry contains the synthetic metrics. At three-second sampling, this retains about ten minutes of continuous history. |
+| `wearable-companion.synthetic-history.v1` | Up to 200 timestamped entries; each entry contains synthetic metrics and, for new samples, profile ID/name/type. At three-second sampling, this retains about ten minutes of continuous history. |
 | `wearable-companion.visible-metrics.v1` | Labels selected for display on the Today dashboard. |
+| `wearable-companion.selected-simulator.v1` | Selected synthetic profile ID. |
 
-History and preferences are local to the app/browser installation. They are not synchronized, backed up, encrypted, or associated with an account. Do not store real health data in this prototype. To clear history, use **History → Clear**. To restore the default metric selection, use **Settings → Show all readings**. Clearing app/browser storage also removes both keys.
+History and preferences are local to the app/browser installation. They are not synchronized, backed up, encrypted, or associated with an account. Do not store real health data in this prototype. To clear history, use **History → Clear**. To restore the default metric selection, use **Settings → Show all readings**. Clearing app/browser storage removes all three keys.
 
 ## Development setup and maintenance commands
 
@@ -47,12 +48,12 @@ Use `npx expo install <package>` for Expo-compatible native dependencies. Rechec
 ## Operational notes
 
 - Sample generation is an in-app timer with a three-second interval; it is not a background service and should not be assumed to run while the app is closed.
-- The simulator derives heart rate and temperature from smooth time-based demo waves. The synthetic step count starts at 300 and rises at 0.12 steps per second from local midnight, capped at 10,000; it resets at the next local day. These values are illustrative and are not a physiological model.
-- The simulator can be paused on the Devices screen. This changes only synthetic sample generation.
+- The simulator derives heart rate and temperature from smooth time-based demo waves. The fitness-band sample step count starts at 300; the smartwatch profile has an arbitrary offset. Both rise at 0.12 steps per second from local midnight, capped at 10,000; they reset at the next local day. Values are illustrative and are not a physiological model.
+- The Devices screen can select a simulator profile and pause/resume sample generation. This does not connect to or control hardware.
 - The trend bars use a separate low-to-high scale for each metric and are illustrative only.
 - If AsyncStorage fails, the app displays an error notice. Current in-memory samples may still display, but persistence should be treated as unavailable until resolved.
 - Restored history is checked for valid timestamps and finite numeric readings; duplicate entry IDs are removed, entries are sorted newest first, and the configured 200-item limit is enforced. Invalid preference values are ignored.
-- CSV export includes one row per reading and marks each row `is_synthetic=true`. The web target downloads a Blob; native targets write a temporary CSV in the app cache and open the platform share sheet. The file contains only local synthetic history.
+- CSV export includes one row per reading, source device ID/name/type, and `is_synthetic=true`. The web target downloads a Blob; native targets write a temporary CSV in the app cache and open the platform share sheet. The file contains only local synthetic history for the selected profile and time range.
 - Keep the simulator label and synthetic-data wording in place until a real, validated data source is implemented.
 
 ## Security and future hardware work

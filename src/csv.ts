@@ -8,11 +8,14 @@ function escapeCell(value: string | number): string {
 }
 
 export function toSyntheticCsv(entries: HistoryEntry[]): string {
-  const rows = [['recorded_at', 'metric', 'value', 'unit', 'is_synthetic']];
+  const rows = [['recorded_at', 'device_id', 'device_name', 'device_type', 'metric', 'value', 'unit', 'is_synthetic']];
   for (const entry of entries) {
     for (const reading of entry.readings) {
       rows.push([
         entry.recordedAt,
+        entry.deviceId ?? 'legacy-demo-wearable',
+        entry.deviceName ?? 'Legacy demo wearable',
+        entry.deviceType ?? 'Unknown simulator profile',
         reading.label,
         String(reading.value),
         reading.unit,

@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { makeSyntheticReadings, Reading } from './src/simulator';
+import { makeSyntheticReadings, Reading, SIMULATED_DEVICES, SimulatedDevice } from './src/simulator';
 import { HistoryEntry, sanitizeHistory, sanitizeVisibleMetrics } from './src/storage';
 import { makeCsvFileName, toSyntheticCsv } from './src/csv';
 import { exportCsv } from './src/exportCsv';
@@ -16,13 +16,22 @@ import { filterHistoryByRange, HistoryRange, summarizeMetric } from './src/histo
 
 const HISTORY_KEY = 'wearable-companion.synthetic-history.v1';
 const PREFERENCES_KEY = 'wearable-companion.visible-metrics.v1';
+const SELECTED_DEVICE_KEY = 'wearable-companion.selected-simulator.v1';
+const DEFAULT_DEVICE = SIMULATED_DEVICES[0];
 const MAX_HISTORY_ITEMS = 200;
 const REFRESH_INTERVAL_MS = 3000;
 const AVAILABLE_METRICS = ['Heart rate', 'Steps today', 'Skin temperature'];
 
-function makeHistoryEntry(readings: Reading[]): HistoryEntry {
+function makeHistoryEntry(readings: Reading[], device: SimulatedDevice): HistoryEntry {
   const recordedAt = new Date().toISOString();
-  return { id: recordedAt, recordedAt, readings };
+  return {
+    id: `${device.id}:${recordedAt}`,
+    recordedAt,
+    readings,
+    deviceId: device.id,
+    deviceName: device.name,
+    deviceType: device.type,
+  };
 }
 
 function Metric({ reading }: { reading: Reading }) {
@@ -91,6 +100,7 @@ function HistoryCard({ entry }: { entry: HistoryEntry }) {
   return (
     <View style={styles.historyCard}>
       <Text style={styles.historyTime}>{timeLabel}</Text>
+      <Text style={styles.historySource}>{entry.deviceName ?? 'Legacy demo wearable'} · simulated source</Text>
       {entry.readings.map(reading => (
         <View key={reading.label} style={styles.historyMetric}>
           <Text style={styles.historyLabel}>{reading.label}</Text>
@@ -219,8 +229,9 @@ function SummaryCard({
 }
 
 export default function App() {
-  const [readings, setReadings] = useState(makeSyntheticReadings());
+  const [readings, setReadings] = useState(makeSyntheticReadings(Date.now(), DEFAULT_DEVICE.id));
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>(DEFAULT_DEVICE.id);
   const [screen, setScreen] = useState<'today' | 'history' | 'devices' | 'settings'>('today');
   const [simulatorRunning, setSimulatorRunning] = useState(true);
   const [visibleMetrics, setVisibleMetrics] = useState(AVAILABLE_METRICS);
@@ -234,7 +245,9 @@ export default function App() {
   const historyRef = useRef<HistoryEntry[]>([]);
   const preferencesRef = useRef<string[]>(AVAILABLE_METRICS);
   const preferenceWriteRef = useRef<Promise<void>>(Promise.resolve());
-  const visibleHistory = filterHistoryByRange(history, historyRange);
+  const selectedDevice = SIMULATED_DEVICES.find(device => device.id === selectedDeviceId) ?? DEFAULT_DEVICE;
+  const selectedDeviceHistory = history.filter(entry => (entry.deviceId ?? DEFAULT_DEVICE.id) === selectedDeviceId);
+  const visibleHistory = filterHistoryByRange(selectedDeviceHistory, historyRange);
 
   useEffect(() => {
     let active = true;
@@ -249,6 +262,12 @@ export default function App() {
             preferencesRef.current = restored;
             if (active) setVisibleMetrics(restored);
           }
+        }
+        const savedDeviceId = await AsyncStorage.getItem(SELECTED_DEVICE_KEY);
+        const restoredDevice = SIMULATED_DEVICES.find(device => device.id === savedDeviceId);
+        if (active && restoredDevice) {
+          setSelectedDeviceId(restoredDevice.id);
+          setReadings(makeSyntheticReadings(Date.now(), restoredDevice.id));
         }
       } catch {
         if (active) setPreferencesError(true);
@@ -281,8 +300,8 @@ export default function App() {
         setHistoryLoaded(true);
 
         if (historyRef.current.length === 0) {
-          const firstReadings = makeSyntheticReadings();
-          const firstEntry = makeHistoryEntry(firstReadings);
+          const firstReadings = makeSyntheticReadings(Date.now(), DEFAULT_DEVICE.id);
+          const firstEntry = makeHistoryEntry(firstReadings, DEFAULT_DEVICE);
           historyRef.current = [firstEntry];
           setReadings(firstReadings);
           setHistory(historyRef.current);
@@ -302,11 +321,11 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!historyLoaded || !simulatorRunning) return;
+    if (!historyLoaded || !preferencesLoaded || !simulatorRunning) return;
 
     const timer = setInterval(() => {
-      const nextReadings = makeSyntheticReadings();
-      const nextEntry = makeHistoryEntry(nextReadings);
+      const nextReadings = makeSyntheticReadings(Date.now(), selectedDeviceId);
+      const nextEntry = makeHistoryEntry(nextReadings, selectedDevice);
       const nextHistory = [nextEntry, ...historyRef.current].slice(0, MAX_HISTORY_ITEMS);
       historyRef.current = nextHistory;
       setReadings(nextReadings);
@@ -318,7 +337,7 @@ export default function App() {
     }, REFRESH_INTERVAL_MS);
 
     return () => clearInterval(timer);
-  }, [historyLoaded, simulatorRunning]);
+  }, [historyLoaded, preferencesLoaded, simulatorRunning, selectedDevice]);
 
   async function clearHistory() {
     historyRef.current = [];
@@ -350,6 +369,17 @@ export default function App() {
 
   function resetMetricPreferences() {
     saveVisibleMetrics([...AVAILABLE_METRICS]);
+  }
+
+  async function selectSimulator(device: SimulatedDevice) {
+    setSelectedDeviceId(device.id);
+    setReadings(makeSyntheticReadings(Date.now(), device.id));
+    try {
+      await AsyncStorage.setItem(SELECTED_DEVICE_KEY, device.id);
+      setPreferencesError(false);
+    } catch {
+      setPreferencesError(true);
+    }
   }
 
   async function exportHistory() {
@@ -396,7 +426,7 @@ export default function App() {
         )}
         {preferencesError && (
           <View style={styles.errorNotice} accessibilityRole="alert">
-            <Text style={styles.errorText}>Display preferences could not be saved on this device.</Text>
+            <Text style={styles.errorText}>Local settings could not be saved on this device.</Text>
           </View>
         )}
 
@@ -418,8 +448,8 @@ export default function App() {
             )}
             <Text style={styles.section}>Device</Text>
             <View style={styles.device}>
-              <Text style={styles.deviceName}>Demo wearable</Text>
-              <Text style={styles.deviceStatus}>Simulated · not connected to hardware</Text>
+              <Text style={styles.deviceName}>{selectedDevice.name}</Text>
+              <Text style={styles.deviceStatus}>{`Simulated ${selectedDevice.type.toLowerCase()} · not connected to hardware`}</Text>
             </View>
             <Text style={styles.footer}>Synthetic readings refresh every 3 seconds and are saved locally.</Text>
           </>
@@ -428,7 +458,7 @@ export default function App() {
             <View style={styles.historyHeading}>
               <View style={styles.historyHeadingCopy}>
                 <Text style={styles.section}>Reading history</Text>
-                <Text style={styles.historyCaption}>Synthetic sample readings · newest first</Text>
+                <Text style={styles.historyCaption}>{selectedDevice.name} · synthetic samples · newest first</Text>
               </View>
               <View style={styles.historyActions}>
                 <Pressable
@@ -497,9 +527,31 @@ export default function App() {
           </>
         ) : screen === 'devices' ? (
           <>
-            <Text style={styles.section}>Device simulator</Text>
+            <Text style={styles.section}>Device simulators</Text>
+            <Text style={styles.settingsIntro}>
+              Choose which synthetic source appears on Today and supplies future samples. These profiles are not discovered or connected devices.
+            </Text>
+            <View style={styles.simulatorList} accessibilityRole="radiogroup" accessibilityLabel="Simulated data source">
+              {SIMULATED_DEVICES.map(device => {
+                const selected = selectedDevice.id === device.id;
+                return (
+                  <Pressable
+                    key={device.id}
+                    accessibilityRole="radio"
+                    accessibilityLabel={`Select ${device.name} simulated data source`}
+                    accessibilityState={{ selected }}
+                    onPress={() => void selectSimulator(device)}
+                    style={[styles.simulatorOption, selected && styles.simulatorOptionSelected]}
+                  >
+                    <Text style={styles.deviceName}>{device.name}</Text>
+                    <Text style={styles.deviceStatus}>{device.type} · synthetic only</Text>
+                    <Text style={styles.simulatorOptionState}>{selected ? 'Selected data source' : 'Select this data source'}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
             <View style={styles.deviceCard}>
-              <Text style={styles.deviceName}>Demo wearable</Text>
+              <Text style={styles.deviceName}>{selectedDevice.name}</Text>
               <Text style={styles.deviceStatus}>Simulator only · no hardware connection</Text>
               <View style={styles.deviceDivider} />
               <Text style={styles.controlLabel}>Sample generation</Text>
@@ -603,6 +655,10 @@ const styles = StyleSheet.create({
   deviceNoteText: { color: '#495577', fontSize: 13, lineHeight: 19 },
   settingsIntro: { color: '#69748c', fontSize: 14, lineHeight: 21, marginBottom: 14 },
   preferenceList: { backgroundColor: 'white', borderRadius: 14, paddingHorizontal: 15 },
+  simulatorList: { gap: 9, marginBottom: 14 },
+  simulatorOption: { backgroundColor: 'white', borderRadius: 13, borderWidth: 1, borderColor: 'white', padding: 16 },
+  simulatorOptionSelected: { borderColor: '#5263a7' },
+  simulatorOptionState: { color: '#303f80', fontSize: 12, fontWeight: '700', marginTop: 8 },
   preferenceRow: { minHeight: 58, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#edf0f5' },
   checkbox: { width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: '#a7afc2', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
   checkboxSelected: { borderColor: '#5263a7', backgroundColor: '#5263a7' },
@@ -626,6 +682,7 @@ const styles = StyleSheet.create({
   exportMessage: { color: '#495577', backgroundColor: '#eef1fa', borderRadius: 10, padding: 12, marginBottom: 12, lineHeight: 18 },
   historyCard: { backgroundColor: 'white', borderRadius: 14, padding: 16, marginBottom: 10 },
   historyTime: { color: '#303f80', fontSize: 13, fontWeight: '700', marginBottom: 10 },
+  historySource: { color: '#818ba0', fontSize: 12, marginTop: -5, marginBottom: 8 },
   historyMetric: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 },
   historyLabel: { color: '#69748c', fontSize: 14 },
   historyValue: { color: '#17213b', fontSize: 14, fontWeight: '600' },
