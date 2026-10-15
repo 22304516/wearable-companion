@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { makeSyntheticReadings, Reading } from './src/simulator';
 import { HistoryEntry, sanitizeHistory, sanitizeVisibleMetrics } from './src/storage';
+import { makeCsvFileName, toSyntheticCsv } from './src/csv';
+import { exportCsv } from './src/exportCsv';
 
 const HISTORY_KEY = 'wearable-companion.synthetic-history.v1';
 const PREFERENCES_KEY = 'wearable-companion.visible-metrics.v1';
@@ -174,6 +176,8 @@ export default function App() {
   const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const [storageError, setStorageError] = useState(false);
   const [preferencesError, setPreferencesError] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportMessage, setExportMessage] = useState('');
   const historyRef = useRef<HistoryEntry[]>([]);
   const preferencesRef = useRef<string[]>(AVAILABLE_METRICS);
   const preferenceWriteRef = useRef<Promise<void>>(Promise.resolve());
@@ -294,6 +298,20 @@ export default function App() {
     saveVisibleMetrics([...AVAILABLE_METRICS]);
   }
 
+  async function exportHistory() {
+    if (history.length === 0 || exporting) return;
+    setExporting(true);
+    setExportMessage('');
+    try {
+      await exportCsv(toSyntheticCsv(history), makeCsvFileName());
+      setExportMessage('CSV export is ready. The file contains synthetic sample readings.');
+    } catch {
+      setExportMessage('The CSV export could not be created. Please try again.');
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -353,15 +371,30 @@ export default function App() {
                 <Text style={styles.section}>Reading history</Text>
                 <Text style={styles.historyCaption}>Synthetic sample readings · newest first</Text>
               </View>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Clear synthetic reading history"
-                onPress={() => void clearHistory()}
-                style={styles.clearButton}
-              >
-                <Text style={styles.clearButtonText}>Clear</Text>
-              </Pressable>
+              <View style={styles.historyActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Export synthetic reading history as CSV"
+                  accessibilityState={{ disabled: history.length === 0 || exporting }}
+                  disabled={history.length === 0 || exporting}
+                  onPress={() => void exportHistory()}
+                  style={[styles.clearButton, (history.length === 0 || exporting) && styles.actionDisabled]}
+                >
+                  <Text style={styles.clearButtonText}>{exporting ? 'Exporting…' : 'Export CSV'}</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Clear synthetic reading history"
+                  onPress={() => void clearHistory()}
+                  style={styles.clearButton}
+                >
+                  <Text style={styles.clearButtonText}>Clear</Text>
+                </Pressable>
+              </View>
             </View>
+            {exportMessage.length > 0 && (
+              <Text style={styles.exportMessage} accessibilityRole="alert">{exportMessage}</Text>
+            )}
             {!historyLoaded ? (
               <Text style={styles.emptyText}>Loading saved history…</Text>
             ) : history.length === 0 ? (
@@ -504,9 +537,12 @@ const styles = StyleSheet.create({
   resetButtonText: { color: '#303f80', fontSize: 13, fontWeight: '700' },
   historyHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 11 },
   historyHeadingCopy: { flex: 1 },
+  historyActions: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   historyCaption: { color: '#69748c', fontSize: 13, marginTop: -5 },
-  clearButton: { paddingHorizontal: 13, paddingVertical: 9, borderRadius: 10, backgroundColor: '#e6e9f2', marginLeft: 12 },
+  clearButton: { paddingHorizontal: 10, paddingVertical: 9, borderRadius: 10, backgroundColor: '#e6e9f2' },
   clearButtonText: { color: '#303f80', fontSize: 13, fontWeight: '700' },
+  actionDisabled: { opacity: 0.45 },
+  exportMessage: { color: '#495577', backgroundColor: '#eef1fa', borderRadius: 10, padding: 12, marginBottom: 12, lineHeight: 18 },
   historyCard: { backgroundColor: 'white', borderRadius: 14, padding: 16, marginBottom: 10 },
   historyTime: { color: '#303f80', fontSize: 13, fontWeight: '700', marginBottom: 10 },
   historyMetric: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 },

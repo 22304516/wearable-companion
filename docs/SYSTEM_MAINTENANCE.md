@@ -11,6 +11,8 @@ Wearable Companion is a single-screen React Native application built with Expo S
 | `App.tsx` | Dashboard, Today/History/Devices/Settings views, simulator timer, preference controls, and local persistence. |
 | `src/simulator.ts` | Produces synthetic demo metrics. It does not access Bluetooth or hardware. |
 | `src/storage.ts` | Validates and normalizes locally restored history and metric preferences. |
+| `src/csv.ts` | Formats the saved synthetic history as CSV and creates export filenames. |
+| `src/exportCsv.ts` / `src/exportCsv.web.ts` | Platform-specific native share and browser download implementations. |
 | `docs/` | Project plan, requirements status, risk register, user guide, maintenance guide, and validation checklist. |
 | `package.json` | Expo scripts and runtime/development dependencies. |
 
@@ -48,6 +50,7 @@ Use `npx expo install <package>` for Expo-compatible native dependencies. Rechec
 - The trend bars use a separate low-to-high scale for each metric and are illustrative only.
 - If AsyncStorage fails, the app displays an error notice. Current in-memory samples may still display, but persistence should be treated as unavailable until resolved.
 - Restored history is checked for valid timestamps and finite numeric readings; duplicate entry IDs are removed, entries are sorted newest first, and the configured 200-item limit is enforced. Invalid preference values are ignored.
+- CSV export includes one row per reading and marks each row `is_synthetic=true`. The web target downloads a Blob; native targets write a temporary CSV in the app cache and open the platform share sheet. The file contains only local synthetic history.
 - Keep the simulator label and synthetic-data wording in place until a real, validated data source is implemented.
 
 ## Security and future hardware work

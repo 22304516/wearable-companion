@@ -23,7 +23,7 @@ Today displays the selected sample metrics and the demo wearable label. Syntheti
 
 ### History
 
-History stores up to 200 timestamped sample entries on the current device/browser. Entries are listed newest first. Recent trends show up to 20 samples per metric as range-scaled bars; each metric has its own scale, so the charts are for interface demonstration and should not be compared across metrics. **Clear** removes the saved entries. If the simulator is still running, a new entry will be recorded at the next sample interval.
+History stores up to 200 timestamped sample entries on the current device/browser. Entries are listed newest first. Recent trends show up to 20 samples per metric as range-scaled bars; each metric has its own scale, so the charts are for interface demonstration and should not be compared across metrics. **Export CSV** exports the saved synthetic entries with timestamps, metric labels, values, units, and an `is_synthetic` column. Web downloads the CSV; mobile opens the system share sheet. **Clear** removes the saved entries. If the simulator is still running, a new entry will be recorded at the next sample interval.
 
 ### Devices
 

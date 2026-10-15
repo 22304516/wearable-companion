@@ -9,6 +9,7 @@
 | User preferences | Implemented for dashboard metric visibility | Selected metrics are stored locally; History continues to retain all simulated readings. |
 | Historical storage | Implemented for synthetic demo readings | Timestamped samples are stored locally; maximum 200 entries. Verify persistence on target platforms. |
 | Historical trends | Basic visual trend view implemented for synthetic samples | History shows up to 20 recent samples as range-scaled bars with low/high labels. This is a demo visualisation, not clinical analysis. |
+| Data export | CSV export implemented for synthetic history | Web downloads a CSV; native platforms share a temporary CSV file. Verify on each target platform. |
 | Authentication | Not implemented | Confirm expected deployment and security scope before selecting an approach. |
 | NFC | Not implemented | Requires compatible hardware and platform validation. |
 | Alerts/notifications | Not implemented | Prioritize after core workflow. |
