@@ -30,7 +30,7 @@
 | 5.2 | System maintenance documentation | Architecture, dependencies, local data, operations, known gaps | Written in `SYSTEM_MAINTENANCE.md` and `ARCHITECTURE.md`; keep in sync with source. |
 | 5.3 | Requirements and test evidence | Traceability and completed validation records | Traceability exists; manual results remain unrecorded. |
 | 6.0 | Demonstration and submission handover | Reliable demo, final presentation, source archive, administrative checklist | Not complete. Prepare after platform verification and scope review. |
-| 6.1 | Demonstration materials | Timed sequence, setup, expected outcomes, synthetic data, fallback, limitations | Not yet written as a standalone checklist; do not imply hardware setup is available. |
+| 6.1 | Demonstration materials | Timed sequence, setup, expected outcomes, synthetic data, fallback, limitations | Drafted in `DEMO_CHECKLIST.md`; assessment format and rehearsal still need confirmation. |
 | 6.2 | Scrum Master presentation | Project overview, actual progress, individual responsibilities, risks, reflection, next steps | Not prepared; use the supplied presentation template when available. |
 | 6.3 | Final source archive | Reproducible source and docs; exclude secrets, caches, and regenerable build artifacts | Not prepared; review `package-lock.json` and archive contents before submission. |
 | 6.4 | University administration | Authorship and effort-form information checklist, based on actual declarations | Not prepared; do not invent signatures, contributions, percentages, or approvals. |
