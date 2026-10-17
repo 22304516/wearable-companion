@@ -68,7 +68,3 @@ Use `npx expo install <package>` for Expo-compatible native dependencies. Rechec
 ## Security and future hardware work
 
 Provider-backed account registration/sign-in is implemented but remains unconfigured and unverified. The current demo heart-rate alert is an in-app threshold only; no system notification channel or device-event alert is implemented. Authorization for remote data, secure session storage, remote records, BLE, and real device management are not implemented. NFC feasibility and the scope decision are recorded in `NFC_FEASIBILITY.md`. Do not add a client-side password check as a substitute for authentication. Before handling real user or health information, define the threat model, data-retention policy, secure session design, RLS policies, consent requirements, and applicable university/project requirements. Real BLE/NFC work requires supported hardware and platform testing; simulator behavior is not evidence of hardware connectivity.
-
-## Release and handover
-
-Before a submission build, run the project checks, execute the manual scenarios in `VALIDATION_CHECKLIST.md`, record actual outcomes and platform versions, update `REQUIREMENTS_STATUS.md`, and list remaining limitations. Do not describe a planned check as a passed check. Do not include credentials, local environment files, caches, or generated build artifacts in a source archive.

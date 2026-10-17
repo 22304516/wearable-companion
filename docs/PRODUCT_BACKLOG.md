@@ -43,18 +43,3 @@
 | HAND-01 / EPIC-10 | As a presenter, I want a concise presentation grounded in evidence so I can explain the project accurately. | Given actual repository evidence, when I present, then all ten required topics are covered, missing team/sprint details are marked, and limitations are stated. | P1 | Done | Official assessment details for final personalization | Draft prepared in task outputs; rehearsal and native PowerPoint review pending. |
 | HAND-02 / EPIC-10 | As a maintainer, I want a clean source archive so the project can be reproduced without local secrets or caches. | Given a committed source tree, when the archive is opened, then source, docs, and lockfile are present and private environment files, caches, installed dependencies, and Git history are absent. | P1 | Done | Current committed tree | ZIP prepared in task outputs from the latest documented commit; checksum supplied separately. Rebuild after repository changes. |
 | ADMIN-02 / EPIC-10 | As a student, I want a checklist of information needed for the official group-assignment forms so I can complete them accurately. | Given the official forms and unit instructions, when I prepare authorship and effort declarations, then names, actual contributions, effort evidence, signatures, dates, and submission details are checked without guessing another student's input. | P0 | S | Official current forms, registered team roster, actual contribution/effort records, teaching-team clarification | Checklist prepared in `ADMINISTRATIVE_CHECKLIST.md`; the forms themselves and declarations are not completed. |
-
-## Planning and status rules
-
-- Stories describe the current code or remaining work; `Implemented` does not mean verified on every target.
-- Do not assign a numbered sprint or report a sprint result without actual records. The dated 13-week schedule in `PROJECT_PLAN.md` is a planning baseline, not a history of completed work.
-- Update status only when a code change, test result, external dependency, or decision provides evidence.
-- Keep synthetic demonstration behavior distinct from production or hardware capability.
-
-## Definition of Ready
-
-A story is ready for scheduling when its user and outcome are clear, acceptance criteria can be observed, its relevant requirements and data/security boundaries are named, dependencies and a suitable test target are identified, and a rough remaining-work size is recorded. A story that needs unavailable hardware, provider configuration, official assessment details, or another person's declaration stays blocked or unscheduled until that dependency is resolved.
-
-## Definition of Done
-
-A story is done only when the acceptance criteria are implemented, relevant automated/manual checks have actual recorded results, the requirements traceability and user/maintenance documentation match observed behavior, limitations are explicit, and the change is committed without secrets. A simulator result does not satisfy a hardware criterion, and a web check does not establish native-platform support.

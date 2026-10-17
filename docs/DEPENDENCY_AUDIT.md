@@ -1,6 +1,5 @@
 # Dependency audit note
 
-**Reviewed:** 15 October 2026  
 **Scope:** npm audit of the installed application dependency tree after adding the Expo-compatible Jest test setup.
 
 `npm audit --omit=dev` reported 36 advisories in the tree (23 high, 13 moderate, no critical). Findings are transitive through the Expo SDK 57 / React Native / Metro toolchain. The audit's suggested forced fixes include downgrading Expo to 44.0.6 and React Native to 0.72.17, which are incompatible with this project's SDK and current source. A dry run confirmed `--force` is the path npm proposes; no audit fix was applied.

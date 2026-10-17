@@ -17,7 +17,3 @@
 | Alerts/notifications | Not implemented | Prioritize after core workflow. |
 | User/maintenance/project documentation | Draft guides and project records prepared | User guide, maintenance guide, product backlog, test plan, reflection draft, and validation evidence describe the current prototype; actual app screenshots and owner review of the reflection remain outstanding. |
 | Testing | Static checks and targeted web checks recorded | TypeScript, lint, Expo Doctor, and 10 pure-helper tests pass; web History and key radio keyboard states were checked. Mobile target is unavailable in the current environment; provider, export file contents, broader workflows, and historical boundaries remain unverified. |
-
-This table is a baseline. Update it as implementation changes.
-
-For the detailed FR-01–FR-13 mapping and cross-cutting quality objectives, see [REQUIREMENTS_TRACEABILITY.md](./REQUIREMENTS_TRACEABILITY.md). “Implemented” describes source code and is not, by itself, a claim of platform verification.

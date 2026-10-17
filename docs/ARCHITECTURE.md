@@ -1,7 +1,6 @@
 # Application architecture and decisions
 
 **Status:** current prototype architecture  
-**Prepared:** 15 October 2026
 
 ## Scope and context
 

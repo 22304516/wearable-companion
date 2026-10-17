@@ -1,7 +1,5 @@
 # Requirements traceability matrix
 
-**Baseline:** master development prompt supplied for 2026-CSE3CAP  
-**Project snapshot:** 15 October 2026  
 **Scope note:** This records the current prototype source and known constraints. “Implemented” means present in source; it does not imply every platform or workflow has been manually verified.
 
 ## Functional requirements

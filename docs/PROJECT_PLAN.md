@@ -2,8 +2,6 @@
 
 ## Assumptions
 
-- One student is responsible for remaining work; no Jira or reusable repository is available.
-- Week 1 begins Monday 13 July 2026. The timeline below follows the supplied 13-week outline.
 - No wearable hardware is available. The first end-to-end demonstration uses a clearly labelled simulator.
 - Expo/React Native + TypeScript is the chosen starting stack to keep mobile setup manageable. Revisit if unit or assessor requirements specify another stack.
 
@@ -39,7 +37,3 @@ The current story-level backlog, acceptance criteria, estimates, dependencies, a
 6. **P2 — Authentication/security:** decide whether local-only prototype or backend is required; implement only a defensible scope.
 7. **P2 — Hardware:** assess BLE/NFC feasibility if hardware/API access becomes available; until then mark unverified.
 8. **P2 — Delivery:** workflow review, evidence log, source archive, and submission checklist.
-
-## Definition of done for a backlog item
-
-The change is implemented, reviewed in the app, relevant checks are run and recorded, limitations are documented, and related documentation matches observed behavior. Do not mark hardware-dependent work complete using simulator evidence.

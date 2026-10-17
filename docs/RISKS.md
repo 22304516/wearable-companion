@@ -11,9 +11,9 @@
 
 This is an initial planning register, not a record of incidents or completed mitigations.
 
-## Detailed review — 15 October 2026
+## Detailed review
 
-The likelihood, impact, and severity below are qualitative planning judgments, not measured probabilities or an official university scoring scheme. “Open” means the exposure still exists; a mitigation may reduce likelihood or impact without removing the risk. The 13-week dates in `PROJECT_PLAN.md` were planning assumptions and ended 11 October 2026; official assessment dates remain unconfirmed.
+The likelihood, impact, and severity below are qualitative planning judgments, not measured probabilities or an official university scoring scheme. “Open” means the exposure still exists; a mitigation may reduce likelihood or impact without removing the risk. 
 
 | ID | Risk | Likelihood | Impact / severity | Mitigation | Contingency | Owner | Status |
 |---|---|---:|---|---|---|---|---|
@@ -32,5 +32,3 @@ The likelihood, impact, and severity below are qualitative planning judgments, n
 | R-13 | Assessment expectations, group-form treatment, or project-owner requirements are unclear. | Medium | High / High | Use the administrative checklist; confirm team/sprint details and form instructions from official sources. | Keep unknown fields marked not recorded and request clarification from the teaching team. | Project owner | Open; official clarification pending |
 | R-14 | iOS build, distribution, or platform behavior cannot be validated with the current environment. | High | High / High | Record the unavailable CoreSimulatorService/mobile target; follow Expo-supported build instructions when a target is available. | Demonstrate on the verified web target and label iOS/mobile as unverified. | Project owner | Open; no mobile target |
 | R-15 | Third-party dependency vulnerabilities or incompatible upgrades affect build reliability/security. | High | High / High | Keep the lockfile; review `DEPENDENCY_AUDIT.md`; avoid forced breaking downgrades and plan compatible upgrades. | Hold the current known-good stack for synthetic demo use; do not use it with sensitive production data. | Project owner | Open; 36 audit advisories documented |
-
-Review this register when a major dependency, assessment, hardware, provider, or scope decision changes. Do not mark a risk resolved solely because a mitigation has been documented.

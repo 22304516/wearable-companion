@@ -1,6 +1,5 @@
 # NFC feasibility decision
 
-**Reviewed:** 15 October 2026  
 **Decision:** NFC is investigated but not implemented in this prototype.
 
 ## Findings

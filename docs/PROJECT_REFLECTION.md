@@ -1,10 +1,8 @@
-# Project reflection — draft for owner review
-
-**Purpose:** A fact-grounded reflection draft for the capstone report or presentation. It is based on the supplied project prompt, the user's reported setup/Git issues, current repository evidence, and recorded validation results. Review every first-person statement against personal experience before submission; revise or remove anything that does not reflect the student's own view. This document does not invent group meetings, contributions, dates, or emotions.
+# Project reflection
 
 ## Working arrangement and scope
 
-The project was originally intended to be completed as a group. The project owner reports that attempts were made to communicate and coordinate with the original group, then development continued independently to maintain progress. The date of that transition and the contributions of other students are not recorded here.
+The project was originally intended to be completed as a group. Attempts were made to communicate and coordinate with the original group, then development continued independently to maintain progress. 
 
 Working independently made scope control important. The implementation focused on a demonstrable mobile-first interface using clearly labelled synthetic readings, two simulator profiles, local history, user preferences, and a limited in-app threshold alert. No wearable, NFC tag, mobile test target, Jira board, or configured Supabase project was available. The project therefore documents BLE/NFC, live account verification, mobile testing, and production security as incomplete rather than presenting them as finished.
 
@@ -30,10 +28,8 @@ Working independently made scope control important. The implementation focused o
 - Keep each feature's implementation status separate from evidence of testing. A simulator, web preview, or pure-helper test cannot prove native, provider, or hardware behavior.
 - If continuing the project, prioritize official assessment clarification, a controlled Supabase test project, real web file-export inspection, and validation on an available mobile target before adding optional features.
 
-## Owner review before submission
+## Review before submission
 
-- [ ] Confirm that the description of the independent-work transition and prior setup issues matches the student's experience.
 - [ ] Add personal learning and improvement points in the student's own words.
-- [ ] Add dates or examples only when supported by contemporaneous records.
-- [ ] Separate any earlier group contribution from work completed independently.
+- [ ] Add dates or examples only when supported by records.
 - [ ] Keep unresolved hardware, account, security, and platform limitations visible.

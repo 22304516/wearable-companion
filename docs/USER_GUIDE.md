@@ -35,8 +35,6 @@ Use the checkboxes to choose which metrics appear on Today. **Show all readings*
 
 The **Demo alerts** section can enable an in-app synthetic heart-rate threshold. Use the minus and plus buttons to adjust the threshold; when the current synthetic reading reaches it, Today shows a red alert card, which disappears when the reading drops below it. This is a demonstration of threshold behavior only. It is not a medical or emergency alert and does not send operating-system notifications.
 
-If Supabase is configured, Settings shows the signed-in email and a **Sign out** button. New users can create an account from the sign-in screen. The local app records are stored under a key scoped to that account ID; they are not uploaded. Without Supabase settings, the app opens in demo mode. See [AUTH_SETUP.md](./AUTH_SETUP.md) before configuring a project.
-
 ## Troubleshooting
 
 - **The browser or phone cannot reach the app:** make sure the Expo terminal is still running; for a phone, check that both devices are on the same network.

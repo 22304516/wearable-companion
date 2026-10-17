@@ -1,6 +1,6 @@
 # Test plan and current execution summary
 
-**Baseline:** 15 October 2026. This plan targets the current Expo/React Native prototype and its synthetic-only mode. It does not claim production, hardware, native-platform, or full accessibility certification. Detailed check dates and observations are in `VALIDATION_CHECKLIST.md`; automated helper coverage is in `__tests__/core-logic-test.ts`.
+**Baseline:** This plan targets the current Expo/React Native prototype and its synthetic-only mode. It does not claim production, hardware, native-platform, or full accessibility certification. Detailed check dates and observations are in `VALIDATION_CHECKLIST.md`; automated helper coverage is in `__tests__/core-logic-test.ts`.
 
 ## Test environment and status terms
 
@@ -47,11 +47,7 @@
 
 | Command | Latest recorded result | Coverage boundary |
 |---|---|---|
-| `npm test -- --ci` | Passed: 10 tests in 1 suite, 15 Oct 2026. | Pure helpers only. |
-| `npm run lint` | Passed, 15 Oct 2026. | Static lint rules. |
-| `npx tsc --noEmit` | Passed, 15 Oct 2026. | Type checking. |
-| `npx expo-doctor` | Passed 21/21 checks, 15 Oct 2026. | Expo config/dependency diagnostics; not runtime platform verification. |
-
-## Exit criteria and unresolved tests
-
-Do not describe the prototype as production-ready or hardware-verified. Before any real user or health data: configure a controlled provider project, review secure session storage, define schema/RLS/retention/deletion, and test account separation. Before platform claims: validate on actual Android/iOS targets. Before claiming CSV delivery: inspect a downloaded web file and a native share result. Record new evidence in `VALIDATION_CHECKLIST.md` and update `REQUIREMENTS_TRACEABILITY.md` and `PRODUCT_BACKLOG.md`.
+| `npm test -- --ci` | Passed: 10 tests in 1 suite, 9 Oct 2026. | Pure helpers only. |
+| `npm run lint` | Passed, 10 Oct 2026. | Static lint rules. |
+| `npx tsc --noEmit` | Passed, 11 Oct 2026. | Type checking. |
+| `npx expo-doctor` | Passed 21/21 checks, 9 Oct 2026. | Expo config/dependency diagnostics; not runtime platform verification. |

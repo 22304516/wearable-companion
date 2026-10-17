@@ -20,16 +20,6 @@ Do not enter real health or other sensitive personal information. Before changin
 | Authentication and data security | Before real accounts or data: configure a controlled development environment, define server-side authorization and tested row-level access controls, select secure native session storage, review dependency advisories, provide account/data deletion and incident handling, and verify backups/retention. A client-side account namespace is not a security boundary. | Incomplete. Supabase auth integration is unconfigured; there is no readings backend/RLS, secure session vault, or production security review. |
 | Consent, transparency, and user choice | If data collection is introduced, provide a clear purpose/data notice, a justified collection scope, appropriate consent and withdrawal routes, and accessible controls. Separate research participation consent from app account terms where applicable. | Not applicable to the current synthetic-only demo; future requirements need review. |
 
-## Before a real-data or participant-study change
-
-1. Confirm the capstone assessment and research classification with the supervisor; contact La Trobe Ethics, Integrity and Biosafety if people or their data will be involved.
-2. Map data flows and identify the legal entity/operator, hosting regions, third-party processors, access roles, and the minimum necessary fields.
-3. Obtain privacy/security review of notices, consent, access/deletion, retention, breach response, secure storage, authorization, and supplier terms.
-4. Confirm intended-purpose wording and obtain specialist advice on whether TGA regulation applies before making clinical or medical claims.
-5. Implement the approved controls, create test cases using synthetic fixtures, and record evidence before accepting real data.
-
-These steps are gates for future scope, not claims that the current capstone has completed them.
-
 ## Primary sources
 
 - OAIC, [Australian Privacy Principles guidelines](https://www.oaic.gov.au/privacy/australian-privacy-principles/australian-privacy-principles-guidelines).
